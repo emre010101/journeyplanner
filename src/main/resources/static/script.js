@@ -2,7 +2,7 @@ document.getElementById('send-button').addEventListener('click', function() {
     var userInput = document.getElementById('user-input').value;
 
     // Send user input to the backend
-    fetch('http://localhost:8080/api/journey', {
+    fetch('http://localhost:8081/api/journey', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
