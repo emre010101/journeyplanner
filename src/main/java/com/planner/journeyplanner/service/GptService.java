@@ -1,15 +1,28 @@
 package com.planner.journeyplanner.service;
 
+import com.theokanning.openai.OpenAiService;
+import com.theokanning.openai.completion.CompletionRequest;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
 
+import javax.annotation.processing.Completion;
+/*
 @Service
 public class GptService {
-
     public String sendMessageToGpt(String message) {
-        String gptResponse = "";
-        // TODO: Connect to the GPT API and send the user's message
-        // Get the response from GPT and assign it to gptResponse
-        return gptResponse;
+
+        OpenAiService service = new OpenAiService("your_token");
+        CompletionRequest completionRequest = CompletionRequest.builder()
+                .prompt(message)
+                .model("text-davinci-002")
+                .echo(true)
+                .build();
+
+        Completion completion = service.createCompletion(completionRequest);
+        StringBuilder result = new StringBuilder();
+        completion.getChoices().forEach(choice -> result.append(choice.getText()));
+
+        return result.toString();
     }
-}
+
+
+}*/

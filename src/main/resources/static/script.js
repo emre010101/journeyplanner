@@ -1,36 +1,7 @@
-document.getElementById('send-button').addEventListener('click', function() {
-    var userInput = document.getElementById('user-input').value;
-
-    // Send user input to the backend
-    fetch('http://localhost:8081/api/journey', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: userInput
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // TODO: Handle the response data from the server
-
-        // Display the user's message in the chat
-        var chatDisplay = document.getElementById('chat-display');
-        var userMessage = document.createElement('p');
-        userMessage.textContent = userInput;
-        chatDisplay.appendChild(userMessage);
-
-        // Clear the input box
-        document.getElementById('user-input').value = '';
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-});
-
+console.log("Script is running");
 
 let map;
+
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
   map = new Map(document.getElementById("map"), {
@@ -40,3 +11,26 @@ async function initMap() {
 }
 
 initMap();
+
+document.getElementById('send-button').addEventListener('click', function() {
+  console.log("Button was clicked");
+  var userInput = document.getElementById('user-input').value;
+  console.log(userInput);
+
+  fetch('http://localhost:8082/api/journey', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        message: userInput
+    })
+  })
+  .then(response => response.text())
+  .then(data => {
+      console.log(data);
+  })
+  .catch((error) => {
+      console.error('Error:', error);
+  });
+});
