@@ -1,16 +1,5 @@
-console.log("Script is running");
+let map, directionsService, directionsRenderer;
 
-let map;
-
-async function initMap() {
-  const { Map } = await google.maps.importLibrary("maps");
-  map = new Map(document.getElementById("map"), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 8,
-  });
-}
-
-initMap();
 
 document.getElementById('send-button').addEventListener('click', function() {
   console.log("Button was clicked");
@@ -26,9 +15,28 @@ document.getElementById('send-button').addEventListener('click', function() {
         message: userInput
     })
   })
-  .then(response => response.text())
-  .then(data => {
-      console.log(data);
+ .then(response => response.text()) // Get the response body as text
+ .then(text => {
+     let data = JSON.parse(text); // Parse the text into a JavaScript object
+
+     console.log("Origin: " + data.origin);
+     console.log("Destination: " + data.destination);
+
+     let request = {
+       origin: data.origin,
+       destination: data.destination,
+       travelMode: 'DRIVING'
+     };
+
+
+    directionsService.route(request, function(result, status) {
+      if (status == 'OK') {
+        // Set the directions on the map
+        directionsRenderer.setDirections(result);
+      } else {
+        console.error('Directions request was not successful for the following reason: ' + status);
+      }
+    });
   })
   .catch((error) => {
       console.error('Error:', error);
