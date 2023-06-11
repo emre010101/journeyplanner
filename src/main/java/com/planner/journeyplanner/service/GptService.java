@@ -28,7 +28,6 @@ public class GptService {
     @PostConstruct
     public void init() {
         API_KEY = config.getProperty("CHATGPT_API_KEY");
-        System.out.println(API_KEY);
     }
 
 
