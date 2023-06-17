@@ -23,17 +23,17 @@ public class JourneyController {
     @PostMapping("/api/journey")
     public ResponseEntity<String> sendMessageToGpt(@RequestBody Map<String, String> payload) throws Exception {
         String message = payload.get("message");
-        System.out.println("Received message: " + message);
+        System.out.println("Received message in JourneyController: " + message);
         JSONObject response = gptService.sendMessageToGpt(message);
-        System.out.println("Response from GPT: " + response.toString());
+        System.out.println("Response from GPTService: " + response.toString());
         // Manually construct a new JSONObject and populate it
-        JSONObject journey = new JSONObject();
+       /* JSONObject journey = new JSONObject();
         journey.put("origin", response.getString("origin"));
-        journey.put("destination", response.getString("destination"));
+        journey.put("destination", response.getString("destination"));*/
 
-        System.out.println("Cleaned Response from GPT: " + journey.toString());
+      //  System.out.println("Cleaned Response from GPT: " + journey.toString());
 
-        return ResponseEntity.ok().body(journey.toString()); // Send it as a String
+        return ResponseEntity.ok().body(response.toString()); // Send it as a String
     }
 
 }

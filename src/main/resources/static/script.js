@@ -35,7 +35,7 @@ function processUserInput(userInput) {
 // function to process the text from the response
 function processText(text) {
     let data = JSON.parse(text);
-
+    console.log("Let see if it will print here")
     console.log("Origin: " + data.origin);
     console.log("Destination: " + data.destination);
 

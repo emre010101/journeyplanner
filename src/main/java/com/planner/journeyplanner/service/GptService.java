@@ -1,19 +1,63 @@
 package com.planner.journeyplanner.service;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
-
-import com.planner.journeyplanner.config.AppConfig;
+import java.net.HttpRetryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.json.JSONObject;
 
-import javax.annotation.PostConstruct;
+/*
+ * @author: Emre Kavak
+ * 04/06/2023
+ * GptService.java
+ * The primary service class that uses:
+ * 'GptApiService' and 'GptResponseHandler'
+ * It builds the message specific format and also handle the request limit.
+* */
+@Service
+public class GptService {
+    private static final int MAX_RETRIES = 5;
+    private static final long INITIAL_WAIT_TIME_MS = 1000;
 
+    @Autowired
+    private GptApiService gptApiService;
 
+    @Autowired
+    private GptResponseHandler gptResponseHandler;
+
+    public JSONObject sendMessageToGpt(String text) throws Exception {
+        int attempts = 0;
+        long waitTime = INITIAL_WAIT_TIME_MS;
+        text = buildPrompt(text);
+
+        while (attempts <= MAX_RETRIES) {
+            try {
+                String response = gptApiService.sendRequest(text);
+                String gptResponse = gptResponseHandler.handleResponse(response);
+                return gptResponseHandler.parseResponse(gptResponse);
+            } catch (IOException e) {
+                if (e instanceof java.net.HttpRetryException && ((HttpRetryException) e).responseCode() == 429) {
+                    handleRateLimitExceeded(waitTime, attempts++);
+                } else {
+                    throw new Exception("Received error from API.", e);
+                }
+            }
+        }
+        throw new Exception("Failed to get a successful response after " + MAX_RETRIES + " attempts.");
+    }
+
+    //It combines user text with default message to make gpt api understand
+    private String buildPrompt(String text) {
+        return "Can you analyze the text below and provide the origin and destination cities in the following format? 'Origin: <origin city>, Destination: <destination city>'. " + "\n" + text;
+    }
+
+    private void handleRateLimitExceeded(long waitTime, int attempts) throws InterruptedException {
+        System.out.println("Rate limit reached, waiting for " + waitTime + "ms before retrying...");
+        Thread.sleep(waitTime);
+        waitTime *= 2;
+    }
+}
+
+/*
 @Service
 public class GptService {
     private static final int MAX_RETRIES = 5;
@@ -116,3 +160,4 @@ public class GptService {
     }
 
 }
+*/
