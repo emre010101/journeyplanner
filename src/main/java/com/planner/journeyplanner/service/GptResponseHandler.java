@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
  * GptResponseHandler.java
  * Designed to handle the response from API
 * */
+
+//Note : Come back to this class divide parseResponse method to handle mid point and send another API request.
 @Service
 public class GptResponseHandler {
 

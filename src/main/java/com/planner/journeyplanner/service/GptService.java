@@ -47,7 +47,9 @@ public class GptService {
 
     //It combines user text with default message to make gpt api understand
     private String buildPrompt(String text) {
-        return "Can you analyze the text below and provide the origin and destination cities in the following format? 'Origin: <origin city>, Destination: <destination city>'. " + "\n" + text;
+        return "Can you analyze the text below and provide the origin and destination cities as well as any " +
+                "points of interest or stops mentioned along the way in the following format? 'Origin: <origin city>, " +
+                "Destination: <destination city>, Stops: [<stop1>, <stop2>, ...]'. " + "\n" + text;
     }
 
     private void handleRateLimitExceeded(long waitTime, int attempts) throws InterruptedException {
