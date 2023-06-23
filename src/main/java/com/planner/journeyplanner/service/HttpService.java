@@ -44,7 +44,7 @@ public class HttpService {
             content.append(inputLine);
         }
         in.close();
-        System.out.println(content.toString());
+        System.out.println("THIS IS PRINTED IN HttpService.class" + "\n" + content.toString());
         return content.toString();
     }
 }
