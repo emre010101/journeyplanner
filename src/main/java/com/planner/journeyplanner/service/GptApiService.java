@@ -1,12 +1,16 @@
 package com.planner.journeyplanner.service;
 
 import com.planner.journeyplanner.config.AppConfig;
+import com.planner.journeyplanner.exception.BadRequestException;
+import com.planner.journeyplanner.exception.UnauthorizedException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 /*
@@ -31,7 +35,9 @@ public class GptApiService {
         API_KEY = config.getProperty("CHATGPT_API_KEY");
     }
 
-    public String sendRequest(String text) throws IOException {
+    public String sendRequest(String text) throws IOException, BadRequestException, UnauthorizedException {
+        System.out.println("TESTING PURPOSE IN GPTAPISERVICE");
+        System.out.println(text);
         String url = "https://api.openai.com/v1/completions";
         HttpURLConnection con = httpService.createConnection(url);
         httpService.setRequestProperties(con, API_KEY);
@@ -39,11 +45,38 @@ public class GptApiService {
         JSONObject data = new JSONObject();
         data.put("model", "text-davinci-003");
         data.put("prompt", text);
-        data.put("max_tokens", 4000);
+        data.put("max_tokens", 3900);
         data.put("temperature", 1.0);
+
+        System.out.println("HEre is the data to check " + "\n");
+        System.out.println(data.toString());
 
         httpService.sendRequestData(con, data);
 
+        int responseCode = con.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+                String badResponse = readErrorResponse(con);
+                throw new BadRequestException("Invalid request body or parameters here is the details: " + "\n" + badResponse);
+            } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                throw new UnauthorizedException("Invalid API key");
+            } else {
+                // Handle other types of HTTP errors
+            }
+        }
+
         return httpService.readResponse(con);
     }
+
+    private String readErrorResponse(HttpURLConnection con) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        return content.toString();
+    }
+
 }

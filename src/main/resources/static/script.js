@@ -25,8 +25,9 @@ function processUserInput(userInput) {
             message: userInput
         })
     })
+    //Arguments acts like variables within the function
     .then(response => response.text()) // Get the response body as text
-    .then(data => processText(data)) // Call the processText function with the data
+    .then(data => processText(data)) // Call the processText function with the data "resulting text is named 'data'"
     .catch((error) => {
         console.error('Error:', error);
     });
@@ -36,6 +37,7 @@ function processUserInput(userInput) {
 function processText(text) {
     let data = JSON.parse(text);
     console.log("Let see if it will print here")
+    console.log(JSON.stringify(data, null, 2));
     console.log("Origin: " + data.origin);
     console.log("Destination: " + data.destination);
 

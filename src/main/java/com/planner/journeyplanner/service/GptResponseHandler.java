@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * @author: Emre Kavak
@@ -21,61 +23,88 @@ public class GptResponseHandler {
     GptApiService gptApiService;
 
     public String handleResponse(String response) throws Exception {
-        return new JSONObject(response.toString()).getJSONArray("choices").getJSONObject(0).getString("text");
+        return new JSONObject(response).getJSONArray("choices").getJSONObject(0).getString("text");
     }
 
     public JSONObject parseResponse(String gptResponse) throws Exception {
-        String[] parts = gptResponse.split(", ");
-        System.out.println();
-        for(String s : parts){
-            System.out.print("TEsting the parts" + s + "\t");
+        JSONObject journey = new JSONObject();
+
+        Pattern originPattern = Pattern.compile("Origin: (.*?),");
+        Matcher originMatcher = originPattern.matcher(gptResponse);
+        if (originMatcher.find()) {
+            journey.put("origin", originMatcher.group(1).trim());
         }
-        if (parts.length >= 2) {
-            String originCity = parts[0].split(": ")[1];
-            String destinationCity = parts[1].split(": ")[1];
 
-            JSONObject journey = new JSONObject();
-            journey.put("origin", originCity);
-            journey.put("destination", destinationCity);
+        Pattern destinationPattern = Pattern.compile("Destination: (.*?)(, Stops: |$)");
+        Matcher destinationMatcher = destinationPattern.matcher(gptResponse);
+        if (destinationMatcher.find()) {
+            journey.put("destination", destinationMatcher.group(1).trim());
+        }
 
-            if (parts.length > 2) {
-                addStopsToJourney(journey, gptResponse);
+        Pattern stopsPattern = Pattern.compile("Stops: \\[(.*?)]");
+        Matcher stopsMatcher = stopsPattern.matcher(gptResponse);
+        if (stopsMatcher.find() && !stopsMatcher.group(1).trim().isEmpty()) {
+            System.out.println("\n" + "addStopsToJourney METHOD is invoked!!" + "\n");
+            addStopsToJourney(journey, stopsMatcher.group(1).trim());
+        }
+
+        if (!journey.has("origin") || !journey.has("destination")) {
+            throw new Exception("Unexpected GPT-3 response format");
+        }
+
+        return journey;
+    }
+    private void addStopsToJourney(JSONObject journey, String stops) throws Exception {
+        if (!stops.isEmpty()) {
+            String[] stopsArray = stops.split(", ");
+            Map<String, List<String>> stopsMap = new HashMap<>();
+            for (String stop : stopsArray) {
+                String request = "Can you find up to 3 " + stop + "s between " +
+                        journey.getString("origin") + " and " +
+                        journey.getString("destination") + "? Please provide them in a comma-separated list.";
+                try {
+                    String response = gptApiService.sendRequest(request);
+                    String gptResponseforStops = handleResponse(response);
+                    List<String> stopList = Arrays.asList(gptResponseforStops.split(", "));
+                    stopsMap.put(stop, stopList);
+                } catch (Exception e) {
+                    System.out.println("Error finding stops: " + e.getMessage());
+                }
             }
-            System.out.println("TESTING THE STOPS after added in GptResponseHandler.jaca: " +"\n" + journey.toString());
+            journey.put("stops", new JSONObject(stopsMap));
+        }
+    }
 
+
+    /*
+
+     It should work if there is no response keyword not exist in the response
+    public JSONObject parseResponse(String gptResponse) throws Exception {
+        String[] parts = gptResponse.split(", ");
+
+        JSONObject journey = new JSONObject();
+
+        for (String part : parts) {
+            if (part.contains("Origin: ")) {
+                String originCity = part.split(": ")[1];
+                System.out.println("Orijin has been found !!!!!!: " + originCity);
+                journey.put("origin", originCity);
+            } else if (part.contains("Destination: ")) {
+                String destinationCity = part.split(": ")[1];
+                journey.put("destination", destinationCity);
+            } else if (part.contains("Stops: ") && !part.trim().equals("Stops: []")) {
+                System.out.println("\n" + "addStopsToJourney METHOD is invoked!!" + "\n");
+                System.out.println(journey.toString());
+                addStopsToJourney(journey, part);
+            }
+        }
+
+        if (journey.has("origin") && journey.has("destination")) {
             return journey;
         } else {
             throw new Exception("Unexpected GPT-3 response format");
         }
-    }
-
-    private void addStopsToJourney(JSONObject journey, String gptResponse) throws Exception {
-        String stopsPart = gptResponse.substring(gptResponse.indexOf("Stops: [") + 8, gptResponse.lastIndexOf("]")).trim();
-        String[] stopsArray = stopsPart.split(", ");
-
-        System.out.println("It should be 2 : " + stopsArray.length);
-        Map<String, List<String>> stops = new HashMap<>();
-        int counter = 1;
-        for (String stop : stopsArray) {
-            System.out.println("COUNTER FOR EACH STOP TOPIC : " + counter++ + "\n") ;
-            String request = "Can you find up to 3 " + stop + "s between " +
-                    journey.getString("origin") + " and " +
-                    journey.getString("destination") + "? Please provide them in a comma-separated list.";
-
-            try {
-                String response = gptApiService.sendRequest(request);
-                String gptResponseforStops = handleResponse(response);
-                List<String> stopList = Arrays.asList(gptResponseforStops.split(", "));
-                stops.put(stop, stopList);
-            } catch (Exception e) {
-                System.out.println("Error finding stops: " + e.getMessage());
-            }
-        }
-
-        journey.put("stops", new JSONObject(stops));
-    }
-
-
+    }*/
 
 
 }
