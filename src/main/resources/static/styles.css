@@ -1,55 +1,59 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+}
+
+.container {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-.container {
-    display: flex;
+#map-and-stops-container {
     flex-grow: 1;
+    display: flex;
 }
 
 #map {
     flex-grow: 1;
 }
 
+#chat-input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+}
+
+#user-input {
+    width: 100%;
+    min-height: 30px;
+    resize: none;
+}
+
+#buttons-area {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 #stops-list {
     width: 200px;
-    display: none;
-    overflow: auto;
-    padding: 10px;
     background-color: #f1f1f1;
+    padding: 10px;
 }
 
 #journey-bar {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    gap: 10px;
     padding: 10px;
-    border-top: 1px solid #ccc;
-    background-color: #fff;
+    background-color: #f1f1f1;
 }
 
 .journey-point {
-    border: 1px solid #ccc;
+    display: inline-block;
     margin: 5px;
-    padding: 5px;
-    cursor: move;
-}
-
-#chat-input-area {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 10px;
-    border-top: 1px solid #ccc;
-    background-color: #fff;
-}
-
-#user-input {
-    flex-grow: 1;
-    margin-right: 20px;
+    background-color: #eee;
+    cursor: move;
 }

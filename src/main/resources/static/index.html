@@ -18,18 +18,21 @@
 <body ondrop="drop(event)" ondragover="allowDrop(event)">
 
 <div class="container">
-    <div id="stops-list"></div>
-    <div id="map"></div>
+    <div id="map-and-stops-container">
+        <div id="stops-list" style="display:none;"></div>
+        <div id="map"></div>
+    </div>
+    <div id="chat-input-area">
+        <textarea id="user-input" placeholder="Enter your journey details here..."></textarea>
+        <div id="buttons-area">
+            <button id="send-button">Send</button>
+            <button id="save-button">Save Route</button>
+            <button id="calculate-button">Calculate Route</button>
+        </div>
+    </div>
+    <div id="journey-bar" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 </div>
 
-<div id="journey-bar">
-    <!-- Journey points will be dynamically added here -->
-</div>
-
-<div id="chat-input-area">
-    <input type="text" id="user-input" placeholder="Enter your journey details here..." />
-    <button id="send-button">Send</button>
-</div>
 
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">

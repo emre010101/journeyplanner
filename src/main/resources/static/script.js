@@ -43,8 +43,8 @@ function processText(text) {
     }
 
     // Add origin and destination to the journey bar
-    addJourneyPoint(data.origin, data.origin);
-    addJourneyPoint(data.destination, data.destination);
+    addPointToBar('origin', data.origin);
+    addPointToBar('destination', data.destination);
 }
 
 function displayStops(stops) {
@@ -68,21 +68,27 @@ function displayStops(stops) {
     }
 }
 
-function addJourneyPoint(id, text) {
-    let journeyBar = document.getElementById('journey-bar');
-    let journeyPoint = document.createElement('span');
-    journeyPoint.className = "journey-point";
-    journeyPoint.id = id;
-    journeyPoint.innerText = text;
-    journeyPoint.draggable = "true";
-    journeyPoint.addEventListener('dragstart', drag);
-    journeyPoint.addEventListener('click', removePoint);
-    journeyBar.appendChild(journeyPoint);
+function addPointToBar(id, text, isOriginDestination = false) {
+    let spanElement = document.createElement('span');
+    spanElement.setAttribute('class', 'journey-point');
+    spanElement.setAttribute('id', id);
+    spanElement.setAttribute('draggable', 'true');
+    spanElement.textContent = text;
+    if (isOriginDestination) {
+        spanElement.classList.add('origin-destination-point');
+    } else {
+        spanElement.onclick = function (event) { removePoint(event); };
+    }
+
+    document.getElementById('journey-bar').appendChild(spanElement);
 }
+
 
 function removePoint(ev) {
     let element = ev.target;
-    element.parentNode.removeChild(element);
+    if (!element.classList.contains('origin-destination-point')) {
+        element.parentNode.removeChild(element);
+    }
 }
 
 function drag(ev) {
@@ -96,9 +102,48 @@ function allowDrop(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    var element = document.getElementById(data);
-    addJourneyPoint(element.id, element.innerText);
+    var bar = document.getElementById("journey-bar");
+    var target = ev.target;
+
+    // check if the bar already contains this point
+    if (bar.contains(document.getElementById(data))) {
+        // if target is another journey point, swap their positions
+        if (target.classList.contains('journey-point')) {
+            swapNodes(document.getElementById(data), target);
+        }
+        return;
+    }
+
+    // if target is the journey bar, add a new journey point
+    else if (target.id === "journey-bar") {
+        addPointToBar(data + Date.now(), data);
+    }
+
 }
+
+function swapNodes(node1, node2) {
+    var parent1 = node1.parentNode;
+    var next1 = node1.nextSibling;
+    var parent2 = node2.parentNode;
+    var next2 = node2.nextSibling;
+
+    // If the nodes are siblings, swapping is easy
+    if (next1 === node2) {
+        parent1.insertBefore(node2, node1);
+    } else if (next2 === node1) {
+        parent2.insertBefore(node1, node2);
+    } else {
+        // If the nodes are not siblings, it's a bit more complicated
+        parent1.insertBefore(node2, next1);
+        parent2.insertBefore(node1, next2);
+    }
+}
+
+document.getElementById('journey-bar').addEventListener('drop', drop);
+document.getElementById('journey-bar').addEventListener('dragover', allowDrop);
+
+
+
 
 function routeDirection(request) {
     directionsService.route(request, function(result, status) {
@@ -120,3 +165,31 @@ inputField.addEventListener('keydown', function(event) {
         handleButtonClick();
     }
 });
+
+// Get your new buttons
+var saveButton = document.getElementById('save-button');
+var calculateButton = document.getElementById('calculate-button');
+
+// Add event listeners for your new buttons
+saveButton.addEventListener('click', saveRoute);
+calculateButton.addEventListener('click', calculateRoute);
+
+// Write your new functions
+function saveRoute() {
+    // Here you can implement the logic for saving the current route
+    // You can get all the elements in the journey bar and save them in the order they are displayed
+    var journeyPoints = Array.from(document.getElementById('journey-bar').children);
+    var route = journeyPoints.map(point => point.innerText);
+    console.log('Saving the following route: ', route);
+    // Save the route array somewhere, like a database or local storage
+}
+
+function calculateRoute() {
+    // Here you can implement the logic for calculating the route with Google Maps API
+    // You can get all the elements in the journey bar and use them in the order they are displayed
+    var journeyPoints = Array.from(document.getElementById('journey-bar').children);
+    var route = journeyPoints.map(point => point.innerText);
+    console.log('Calculating the route with the following stops: ', route);
+    // Calculate the route with Google Maps API
+}
+
