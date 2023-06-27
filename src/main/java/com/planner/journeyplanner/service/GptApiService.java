@@ -55,13 +55,13 @@ public class GptApiService {
 
         int responseCode = con.getResponseCode();
         if (responseCode != HttpURLConnection.HTTP_OK) {
+            String badResponse = readErrorResponse(con);
             if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-                String badResponse = readErrorResponse(con);
                 throw new BadRequestException("Invalid request body or parameters here is the details: " + "\n" + badResponse);
             } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                 throw new UnauthorizedException("Invalid API key");
             } else {
-                // Handle other types of HTTP errors
+                System.out.println(badResponse);
             }
         }
 
