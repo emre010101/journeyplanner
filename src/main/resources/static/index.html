@@ -6,12 +6,12 @@
     <script>
     window.initMap = function() {
         map = new google.maps.Map(document.getElementById("map"), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8,
+            center: { lat: 53.550, lng: -7.305 }, <!-- Sydney: lat: -34.397, lng: 150.644  Ireland: 53.7798° N, 7.3055° W-->
+            zoom: 7,
         });
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
-  directionsRenderer.setMap(map);
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
     }
   </script>
 </head>

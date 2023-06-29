@@ -1,15 +1,16 @@
 let map, directionsService, directionsRenderer;
 
+//When user click to enter or press
 function handleButtonClick() {
     var userInput = getUserInput();
     processUserInput(userInput);
 }
-
+//Getting what ever the user typed
 function getUserInput() {
     var userInput = document.getElementById('user-input').value;
     return userInput;
 }
-
+//Sending the input to backend and calling processText() with the response
 function processUserInput(userInput) {
     fetch('http://localhost:8082/api/journey', {
         method: 'POST',
@@ -26,7 +27,17 @@ function processUserInput(userInput) {
         console.error('Error:', error);
     });
 }
-
+//Calling the directionsRenderer to display the route on the map
+function routeDirection(request) {
+    directionsService.route(request, function(result, status) {
+        if (status == 'OK') {
+            directionsRenderer.setDirections(result);
+        } else {
+            console.error('Directions request failed: ' + status);
+        }
+    });
+}
+//Handling the response
 function processText(text) {
     let data = JSON.parse(text);
 
@@ -35,9 +46,9 @@ function processText(text) {
         destination: data.destination,
         travelMode: 'DRIVING'
     };
-
+    //Based on only origin and destination
     routeDirection(request);
-
+    //if there are stop to be displayed
     if(Object.keys(data.stops).length > 0){
         displayStops(data.stops);
     }
@@ -46,6 +57,25 @@ function processText(text) {
     addPointToBar('origin', data.origin);
     addPointToBar('destination', data.destination);
 }
+
+function addPointToBar(id, text, isOriginDestination = false) {
+    let spanElement = document.createElement('span');
+    spanElement.setAttribute('class', 'journey-point');
+    spanElement.setAttribute('id', id);
+    spanElement.setAttribute('draggable', 'true');
+    spanElement.textContent = text;
+    if (isOriginDestination) {
+        spanElement.classList.add('origin-destination-point');
+    } else {
+        spanElement.onclick = function (event) { removePoint(event); };
+    }
+
+    document.getElementById('journey-bar').appendChild(spanElement);
+}
+
+
+
+
 
 function displayStops(stops) {
     let stopsList = document.getElementById('stops-list');
@@ -68,20 +98,6 @@ function displayStops(stops) {
     }
 }
 
-function addPointToBar(id, text, isOriginDestination = false) {
-    let spanElement = document.createElement('span');
-    spanElement.setAttribute('class', 'journey-point');
-    spanElement.setAttribute('id', id);
-    spanElement.setAttribute('draggable', 'true');
-    spanElement.textContent = text;
-    if (isOriginDestination) {
-        spanElement.classList.add('origin-destination-point');
-    } else {
-        spanElement.onclick = function (event) { removePoint(event); };
-    }
-
-    document.getElementById('journey-bar').appendChild(spanElement);
-}
 
 
 function removePoint(ev) {
@@ -118,9 +134,9 @@ function drop(ev) {
     else if (target.id === "journey-bar") {
         addPointToBar(data + Date.now(), data);
     }
-
 }
 
+//Check this one?
 function swapNodes(node1, node2) {
     var parent1 = node1.parentNode;
     var next1 = node1.nextSibling;
@@ -142,23 +158,11 @@ function swapNodes(node1, node2) {
 document.getElementById('journey-bar').addEventListener('drop', drop);
 document.getElementById('journey-bar').addEventListener('dragover', allowDrop);
 
-
-
-
-function routeDirection(request) {
-    directionsService.route(request, function(result, status) {
-        if (status == 'OK') {
-            directionsRenderer.setDirections(result);
-        } else {
-            console.error('Directions request failed: ' + status);
-        }
-    });
-}
-
 document.getElementById('send-button').addEventListener('click', handleButtonClick);
 
 var inputField = document.getElementById('user-input');
 
+//Adding event listener for enter button to allow user friendly platform
 inputField.addEventListener('keydown', function(event) {
     if (event.key === "Enter") {
         event.preventDefault();
@@ -166,6 +170,10 @@ inputField.addEventListener('keydown', function(event) {
     }
 });
 
+
+
+
+//Buttons to display and save the route
 // Get your new buttons
 var saveButton = document.getElementById('save-button');
 var calculateButton = document.getElementById('calculate-button');

@@ -45,7 +45,7 @@ public class GptApiService {
         JSONObject data = new JSONObject();
         data.put("model", "text-davinci-003");
         data.put("prompt", text);
-        data.put("max_tokens", 3900);
+        data.put("max_tokens", 3800);
         data.put("temperature", 1.0);
 
         System.out.println("HEre is the data to check " + "\n");
