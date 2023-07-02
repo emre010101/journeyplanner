@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /*
  * @author: Emre Kavak
@@ -61,11 +62,14 @@ public class GptResponseHandler {
             for (String stop : stopsArray) {
                 String request = "Can you find up to 3 " + stop + "s between " +
                         journey.getString("origin") + " and " +
-                        journey.getString("destination") + "? Please provide them in a comma-separated list.";
+                        journey.getString("destination") + "? Please provide their full addresses for each place in a semicolon separated list, semicolons are only used separating the each address.";
                 try {
                     String response = gptApiService.sendRequest(request);
                     String gptResponseforStops = handleResponse(response);
-                    List<String> stopList = Arrays.asList(gptResponseforStops.split(", "));
+                    System.out.println("THE FULL ADDRESS OF THE STOP" + "\n" + response);
+                    List<String> stopList = Arrays.stream(gptResponseforStops.split(";"))
+                            .map(String::trim)
+                            .collect(Collectors.toList());
                     stopsMap.put(stop, stopList);
                 } catch (Exception e) {
                     System.out.println("Error finding stops: " + e.getMessage());

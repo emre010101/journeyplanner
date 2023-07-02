@@ -4,16 +4,18 @@
     <title>Journey Planner</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script>
-    window.initMap = function() {
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: { lat: 53.550, lng: -7.305 }, <!-- Sydney: lat: -34.397, lng: 150.644  Ireland: 53.7798° N, 7.3055° W-->
-            zoom: 7,
-        });
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer();
-        directionsRenderer.setMap(map);
-    }
-  </script>
+window.initMap = function() {
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 53.550, lng: -7.305 }, <!-- Sydney: lat: -34.397, lng: 150.644  Ireland: 53.7798° N, 7.3055° W-->
+        zoom: 7,
+    });
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+    geocoder = new google.maps.Geocoder();
+}
+</script>
+
 </head>
 <body ondrop="drop(event)" ondragover="allowDrop(event)">
 

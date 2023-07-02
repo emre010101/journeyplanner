@@ -64,7 +64,7 @@ public class GptService {
 
     //It combines user text with default message to make gpt api understand
     private String buildPrompt(String text) {
-        return "Can you analyze the text below and provide the origin and destination cities? " +
+        return "Can you analyze the text below and provide the origin and destination cities with their full name? " +
                 "If any stops or points of interest are mentioned, please include them as well. " +
                 "Otherwise, the 'Stops' field should be left empty. " +
                 "The response should be in the following format: 'Origin: <origin city>, " +

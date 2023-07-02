@@ -46,7 +46,7 @@ public class GptApiService {
         data.put("model", "text-davinci-003");
         data.put("prompt", text);
         data.put("max_tokens", 3800);
-        data.put("temperature", 1.0);
+        data.put("temperature", 0.4); //Adjusting the randomness
 
         System.out.println("HEre is the data to check " + "\n");
         System.out.println(data.toString());
