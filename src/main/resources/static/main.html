@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey Planner</title>
+    <link rel="stylesheet" href="CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="CSS/navbar.css">
+</head>
+<body>
+<nav id="nav-bar">
+    <div id="site-name">
+        <a href="main.html">Journey Planner</a>
+    </div>
+    <div id="nav-links">
+        <a href="main.html">Home</a>
+        <a href="index.html">Planner</a>
+        <a href="communityRoom.html">Community Room</a>
+        <span id="user-greeting"></span>
+        <button id="sign-in">Sign In</button>
+        <button id="log-in">Log In</button>
+    </div>
+</nav>
+<main>
+    <h1>Welcome to Journey Planner</h1>
+    <p>Instructions about how to use the system...</p>
+    <p>For a more in-depth guide, watch the video tutorial below:</p>
+    <iframe id="tutorial-video" width="560" height="315" src="https://www.youtube.com/embed/0QO2jdinCoQ" frameborder="0" allowfullscreen></iframe>
+</main>
+
+<!-- Log In Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label><br>
+            <input type="text" id="loginUsername" name="username"><br>
+            <label for="loginPassword">Password:</label><br>
+            <input type="password" id="loginPassword" name="password"><br>
+            <input type="submit" value="Log In">
+            <p><a href="#">Forgot password?</a></p>
+        </form>
+    </div>
+</div>
+
+<!-- Sign In Modal -->
+<div id="signinModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="signinForm">
+            <label for="signinUsername">Username:</label><br>
+            <input type="text" id="signinUsername" name="username"><br>
+            <label for="signinPassword">Password:</label><br>
+            <input type="password" id="signinPassword" name="password"><br>
+            <label for="signinConfirmPassword">Confirm Password:</label><br>
+            <input type="password" id="signinConfirmPassword" name="confirmPassword"><br>
+            <label for="signinEmail">Email:</label><br>
+            <input type="email" id="signinEmail" name="email"><br>
+            <label for="signinRealName">Real Name:</label><br>
+            <input type="text" id="signinRealName" name="realname"><br>
+            <input type="submit" value="Sign In">
+        </form>
+    </div>
+</div>
+
+
+<script src="Script/index.js"></script>
+</body>
+</html>

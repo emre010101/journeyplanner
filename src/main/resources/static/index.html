@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Journey Planner</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="CSS/planner.css">
+    <link rel="stylesheet" type="text/css" href="CSS/navbar.css">
     <script>
 window.initMap = function() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -18,6 +19,19 @@ window.initMap = function() {
 
 </head>
 <body ondrop="drop(event)" ondragover="allowDrop(event)">
+
+<nav id="nav-bar">
+    <div id="site-name">
+        <a href="main.html">Journey Planner</a>
+    </div>
+    <div id="nav-links">
+        <a href="main.html">Home</a>
+        <a href="communityRoom.html">Community Room</a>
+        <span id="user-greeting"></span> <!--
+        <button id="sign-in">Sign In</button>
+        <button id="log-in">Log In</button> -->
+    </div>
+</nav>
 
 <div class="container">
     <div id="map-and-stops-container">
@@ -39,7 +53,7 @@ window.initMap = function() {
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">
 </script>
-<script src="script.js"></script>
+<script src="Script/planner.js"></script>
 
 </body>
 </html>

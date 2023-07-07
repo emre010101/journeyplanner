@@ -1,4 +1,10 @@
 package com.planner.journeyplanner.repository;
 
-public class UserRepository {
+import com.planner.journeyplanner.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface UserRepository extends JpaRepository<User, String> {
+
+    User findByUsername(String username);
 }
