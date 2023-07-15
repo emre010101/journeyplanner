@@ -1,7 +1,5 @@
 package com.planner.journeyplanner.model;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +7,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(nullable = false, unique = true)
@@ -20,6 +18,18 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "full_name", nullable = false)
+    private String full_name;
+
+    public User(){};
+
+    public User(String username, String password, String email, String full_name) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.full_name = full_name;
+    }
 
     // getters and setters
 
@@ -53,5 +63,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFullName() {
+        return full_name;
+    }
+
+    public void setFullName(String fullName) {
+        this.full_name = fullName;
     }
 }

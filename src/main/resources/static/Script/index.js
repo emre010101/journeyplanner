@@ -54,15 +54,22 @@ window.onclick = function(event) {
   }
 }
 
+//////////////////////////////////////////////////////////////////
+
 // Handle the login form submission
-document.getElementById('login-form').addEventListener('submit', function(event) {
-    // Prevent the form from being submitted normally
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    // Prevent the form from being submitted normally and avoid reload the page
     event.preventDefault();
 
     // Get username and password from the form
-    var username = document.getElementById('username').value;
-    var password = document.getElementById('password').value;
+    var username = document.getElementById('loginUsername').value;
+    var password = document.getElementById('loginPassword').value;
 
+    // Call the loginUser function
+    loginUser(username, password);
+});
+
+function loginUser(username, password) {
     // Create request payload
     var payload = {
         username: username,
@@ -70,7 +77,7 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     };
 
     // Send POST request to /login
-    fetch('/login', {
+    return fetch('http://localhost:8082/api/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -93,4 +100,4 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     .catch((error) => {
         console.error('Error:', error);
     });
-});
+}

@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+/*
+*
+* */
 
+import java.util.Map;
+//@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "*")
 @RestController
 public class JourneyController {
 
@@ -19,7 +24,7 @@ public class JourneyController {
         this.gptService = gptService;
     }
 
-    @CrossOrigin(origins = "http://localhost:63342")
+    //@CrossOrigin(origins = "http://localhost:63342")
     @PostMapping("/api/journey")
     public ResponseEntity<String> sendMessageToGpt(@RequestBody Map<String, String> payload) throws Exception {
         String message = payload.get("message");
