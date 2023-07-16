@@ -12,7 +12,7 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(UserRepository repository) {
         return args -> {
-            User user = new User("TestUser1", "TestPassword1", "TestEmail1@example.com", "NameSurname1");
+            User1 user1 = new User1("TestUser1", "TestPassword1", "TestEmail1@example.com", "NameSurname1");
             repository.save(user);
             System.out.println("User saved: " + user.getUsername());
         };

@@ -1,6 +1,6 @@
 package com.planner.journeyplanner.controller;
 
-import com.planner.journeyplanner.model.User;
+import com.planner.journeyplanner.user.User;
 import com.planner.journeyplanner.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
