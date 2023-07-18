@@ -1,4 +1,4 @@
-package com.planner.journeyplanner.model;
+package com.planner.journeyplanner.Gpt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

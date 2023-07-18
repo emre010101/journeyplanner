@@ -1,12 +1,10 @@
-package com.planner.journeyplanner.controller;
+package com.planner.journeyplanner.Gpt;
 
-import com.planner.journeyplanner.service.GptService;
+import com.planner.journeyplanner.Gpt.GptService;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /*
 *
@@ -14,19 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 //@CrossOrigin(origins = "http://localhost:63342")
-@CrossOrigin(origins = "*")
 @RestController
-public class JourneyController {
+@RequestMapping("/api/jp/gpt")
+@RequiredArgsConstructor
+public class GptController {
 
     private final GptService gptService;
 
-    public JourneyController(GptService gptService) {
-        this.gptService = gptService;
-    }
-
     //@CrossOrigin(origins = "http://localhost:63342")
-    @PostMapping("/api/journey")
-    public ResponseEntity<String> sendMessageToGpt(@RequestBody Map<String, String> payload) throws Exception {
+    @PostMapping("/analyze")
+    public ResponseEntity<String> sendMessageToGpt(
+            @RequestBody Map<String, String> payload) throws Exception {
         String message = payload.get("message");
         //
         System.out.println("Received message in JourneyController: " + message);

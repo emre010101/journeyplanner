@@ -19,37 +19,43 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.planner.journeyplanner.token.TokenRepository;
 
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor //it will create constructor for each private final variable
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization"); //Token
-        final String jwtToken;
-        final String userEmail;
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response); //if the token doesn't exist pass the other filter
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+        if (request.getServletPath().contains("/api/jp/auth")) {
+            filterChain.doFilter(request, response);
             return;
         }
-        jwtToken = authHeader.substring(7); //After the "Bearer "
-        userEmail = jwtService.extractUsername(jwtToken);
-        //User is passed with header but not authenticated yet
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            //get the user details from the database
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.isTokenValid(jwtToken, userDetails)){
-                //if the user and token are valid, create the object of type username password authentication token
+            var isTokenValid = tokenRepository.findByToken(jwt)
+                    .map(t -> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
+            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -61,6 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        filterChain.doFilter(request, response); //Always pass to next chain in filter
+        filterChain.doFilter(request, response);
     }
 }

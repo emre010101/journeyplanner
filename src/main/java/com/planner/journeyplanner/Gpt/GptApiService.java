@@ -1,4 +1,4 @@
-package com.planner.journeyplanner.service;
+package com.planner.journeyplanner.Gpt;
 
 import com.planner.journeyplanner.config.AppConfig;
 import com.planner.journeyplanner.exception.BadRequestException;

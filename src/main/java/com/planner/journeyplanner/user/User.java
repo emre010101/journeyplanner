@@ -1,5 +1,6 @@
 package com.planner.journeyplanner.user;
 
+import com.planner.journeyplanner.token.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor //Will create constructor without arguments
 @AllArgsConstructor //all the arguments constructor
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User implements UserDetails {
 
     @Id
@@ -31,13 +32,16 @@ public class User implements UserDetails {
     //@Column(nullable = false)
     private String password;
 
-
     //@Column(name = "full_name", nullable = false)
-    private String full_name;
+    private String firstname;
+
+    private String lastname;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

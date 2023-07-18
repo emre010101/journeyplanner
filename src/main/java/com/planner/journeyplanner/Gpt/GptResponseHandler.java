@@ -1,4 +1,4 @@
-package com.planner.journeyplanner.service;
+package com.planner.journeyplanner.Gpt;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
