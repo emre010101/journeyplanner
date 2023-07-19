@@ -1,59 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journey Planner</title>
-    <link rel="stylesheet" type="text/css" href="CSS/planner.css">
+    <link rel="stylesheet" href="CSS/index.css">
     <link rel="stylesheet" type="text/css" href="CSS/navbar.css">
-    <script>
-window.initMap = function() {
-    map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 53.550, lng: -7.305 }, <!-- Sydney: lat: -34.397, lng: 150.644  Ireland: 53.7798° N, 7.3055° W-->
-        zoom: 7,
-    });
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
-    geocoder = new google.maps.Geocoder();
-}
-</script>
-
 </head>
-<body ondrop="drop(event)" ondragover="allowDrop(event)">
-
+<body>
 <nav id="nav-bar">
     <div id="site-name">
-        <a href="main.html">Journey Planner</a>
+        <a href="index.html">Journey Planner</a>
     </div>
     <div id="nav-links">
-        <a href="main.html">Home</a>
+        <a href="index.html">Home</a>
+        <a href="planner.html">Planner</a>
         <a href="communityRoom.html">Community Room</a>
-        <span id="user-greeting"></span> <!--
+        <span id="user-greeting"></span>
         <button id="sign-in">Sign In</button>
-        <button id="log-in">Log In</button> -->
+        <button id="log-in">Log In</button>
+        <button id="log-out">Log out</button>
     </div>
 </nav>
+<main>
+    <h1>Welcome to Journey Planner</h1>
+    <p>Instructions about how to use the system...</p>
+    <p>For a more in-depth guide, watch the video tutorial below:</p>
+    <video id="tutorial-video" width="560" height="315" controls>
+        <source src="video/tutorial.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</main>
 
-<div class="container">
-    <div id="map-and-stops-container">
-        <div id="stops-list" style="display:none;"></div>
-        <div id="map"></div>
+<!-- Log In Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="loginForm">
+            <label for="loginEmail">Username:</label><br>
+            <input type="text" id="loginEmail" name="useremail"><br>
+            <label for="loginPassword">Password:</label><br>
+            <input type="password" id="loginPassword" name="password"><br>
+            <input type="submit" value="Log In">
+            <p><a href="#">Forgot password?</a></p>
+        </form>
     </div>
-    <div id="chat-input-area">
-        <textarea id="user-input" placeholder="Enter your journey details here..."></textarea>
-        <div id="buttons-area">
-            <button id="send-button">Send</button>
-            <button id="save-button">Save Route</button>
-            <button id="calculate-button">Calculate Route</button>
-        </div>
+</div>
+
+<!-- Sign In Modal -->
+<div id="signinModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="signinForm">
+            <label for="signinEmail">Email:</label><br>
+            <input type="email" id="signinEmail" name="email"><br>
+            <label for="signinPassword">Password:</label><br>
+            <input type="password" id="signinPassword" name="password"><br>
+            <label for="signinConfirmPassword">Confirm Password:</label><br>
+            <input type="password" id="signinConfirmPassword" name="confirmPassword"><br>
+            <label for="signinFirstName">First Name:</label><br>
+            <input type="text" id="signinFirstName" name="firstname"><br>
+            <label for="signinLastName">Last Name:</label><br>
+            <input type="text" id="signinLastName" name="lastname"><br>
+            <input type="submit" value="Sign In">
+        </form>
     </div>
-    <div id="journey-bar" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 </div>
 
 
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">
-</script>
-<script src="Script/planner.js"></script>
-
+<script src="Script/index.js"></script>
 </body>
 </html>

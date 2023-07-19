@@ -24,4 +24,15 @@ public class RegisterRequest {
     private String email;
     private String password;
     private Role role;
+
+    @Override
+    public String toString() {
+        return "RegisterRequest{" +
+                "firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

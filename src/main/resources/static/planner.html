@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Journey Planner</title>
+    <link rel="stylesheet" type="text/css" href="CSS/planner.css">
+    <link rel="stylesheet" type="text/css" href="CSS/navbar.css">
+    <script>
+window.initMap = function() {
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 53.550, lng: -7.305 }, <!-- Sydney: lat: -34.397, lng: 150.644  Ireland: 53.7798° N, 7.3055° W-->
+        zoom: 7,
+    });
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+    geocoder = new google.maps.Geocoder();
+}
+</script>
+
+</head>
+<body ondrop="drop(event)" ondragover="allowDrop(event)">
+
+<nav id="nav-bar">
+    <div id="site-name">
+        <a href="index.html">Journey Planner</a>
+    </div>
+    <div id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="communityRoom.html">Community Room</a>
+        <span id="user-greeting"></span> <!--
+        <button id="sign-in">Sign In</button>
+        <button id="log-in">Log In</button> -->
+    </div>
+</nav>
+
+<div class="container">
+    <div id="map-and-stops-container">
+        <div id="stops-list" style="display:none;"></div>
+        <div id="map"></div>
+    </div>
+    <div id="chat-input-area">
+        <textarea id="user-input" placeholder="Enter your journey details here..."></textarea>
+        <div id="buttons-area">
+            <button id="send-button">Send</button>
+            <button id="save-button">Save Route</button>
+            <button id="calculate-button">Calculate Route</button>
+        </div>
+    </div>
+    <div id="journey-bar" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+</div>
+
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">
+</script>
+<script src="Script/planner.js"></script>
+
+</body>
+</html>

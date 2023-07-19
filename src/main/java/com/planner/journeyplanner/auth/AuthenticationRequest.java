@@ -20,4 +20,12 @@ public class AuthenticationRequest {
 
     private String email;
     String password;
+
+    @Override
+    public String toString() {
+        return "AuthenticationRequest{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
