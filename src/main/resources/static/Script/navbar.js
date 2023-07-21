@@ -1,76 +1,136 @@
 // This is a placeholder for the logged-in user.
-// In a real application, you would get this data from your server.
-/*var loggedInUser = null; //'emre.kavak3938@gmail.com'
+//If the server confirm user authentication, the user will be saved here
+var loggedInUser = null; //'emre.kavak3938@gmail.com'
 
-window.onload = function() {
-    var signInButton = document.getElementById('sign-in');
-    var logInButton = document.getElementById('log-in');
+//Adding window event listener to load external html components and other functionalities
+window.addEventListener("load", function() {
+    console.log("Testing");
+    Promise.all([ //Waiting to load the other components
+        loadComponent('nav-bar', 'pages/navbar.html'),
+        loadComponent('loginModal', 'pages/loginModal.html'),
+        loadComponent('signinModal', 'pages/signinModal.html')
+    ])
+    .then(() => {
+
+        var elements = assignButtonAndModals();
+        assignEventListeners(elements);
+
+        // Set the page state depending on the logged in user
+        setPageState(loggedInUser, elements);
+
+        // Handle the login form submission
+        handleLoginFormSubmission(elements);
+
+        //Handle the sign-in form submission
+        handleSignInFormSubmission(elements);
+    })
+    .catch((error) => {
+        console.error("Error: ", error);
+    });
+});
+
+function loadComponent(elementId, componentPath) {
+    return new Promise((resolve, reject) => {//avoid asynchronous loading
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onload = function() {
+            document.getElementById(elementId).innerHTML = this.responseText;
+            resolve(); //The promise is resolved when the component has been loaded
+        }
+
+        xhttp.onerror = reject; //The promise is rejected if there's an error
+
+        xhttp.open("GET", componentPath, true);
+        xhttp.send();
+    });
+}
+
+function assignButtonAndModals() {
+    //Declare your variables here
+    var loginModal, signinModal, loginButton, signInButton, closeButtons;
+
+    //Get the modals
+    loginModal = document.getElementById("loginModal");
+    signinModal = document.getElementById("signinModal");
+
+    //Get the buttons that opens the modals
+    loginButton = document.getElementById("log-in");
+    signinButton = document.getElementById("sign-in");
+
+    //Get the <span> elements that closes the modals
+    closeButtons = document.getElementsByClassName("close");
+
+    //Return the variables as an object
+    return {loginModal, signinModal, loginButton, signInButton, closeButtons};
+}
+
+//Event Listeners will be added after they are returned
+function assignEventListeners(elements){
+
+    //When the user clicks it, open the modal
+    elements.loginButton.onclick = function(){
+        console.log("Login is clicked");
+        elements.loginModal.style.display = "block";
+    }
+    elements.signinButton.onclick = function() {
+        elements.signinModal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    for (let i = 0; i < elements.closeButtons.length; i++) {
+        elements.closeButtons[i].onclick = function() {
+            elements.closeButtons[i].parentElement.parentElement.style.display = "none";
+        }
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == loginModal) {
+        elements.loginModal.style.display = "none";
+      } else if (event.target == signinModal) {
+        elements.signinModal.style.display = "none";
+      }
+    }
+}
+
+
+
+function setPageState(loggedInUser, elements) {
     var logOutButton = document.getElementById('log-out')
     var userGreeting = document.getElementById('user-greeting');
 
     if (loggedInUser) {
-        signInButton.style.display = 'none';
-        logInButton.style.display = 'none';
+        elements.signInButton.style.display = 'none';
+        elements.logInButton.style.display = 'none';
         logOutButton.style.display = 'inline-block';
         userGreeting.textContent = 'Welcome, ' + loggedInUser;
     } else {
         logOutButton.style.display = 'none';
-        signInButton.style.display = 'inline-block';
-        logInButton.style.display = 'inline-block';
+        elements.signInButton.style.display = 'inline-block';
+        elements.logInButton.style.display = 'inline-block';
         userGreeting.textContent = '';
     }
 }
 
-// Get the modals
-var loginModal = document.getElementById("loginModal");
-var signinModal = document.getElementById("signinModal");
 
-// Get the buttons that opens the modals
-var loginButton = document.getElementById("log-in");
-var signinButton = document.getElementById("sign-in");
-
-// Get the <span> elements that closes the modals
-var closeButtons = document.getElementsByClassName("close");
-
-// When the user clicks on the button, open the modal
-loginButton.onclick = function() {
-  loginModal.style.display = "block";
-}
-
-signinButton.onclick = function() {
-  signinModal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-for (let i = 0; i < closeButtons.length; i++) {
-  closeButtons[i].onclick = function() {
-    closeButtons[i].parentElement.parentElement.style.display = "none";
-  }
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == loginModal) {
-    loginModal.style.display = "none";
-  } else if (event.target == signinModal) {
-    signinModal.style.display = "none";
-  }
-}
 
 //////////////////////////////////////////////////////////////////
 
 // Handle the login form submission
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    // Prevent the form from being submitted normally and avoid reload the page
-    event.preventDefault();
+function handleLoginFormSubmission(elements) {
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        // Prevent the form from being submitted normally and avoid reload the page
+        event.preventDefault();
 
-    // Get username and password from the form
-    var loginEmail = document.getElementById('loginEmail').value;
-    var password = document.getElementById('loginPassword').value;
+        // Get username and password from the form
+        var loginEmail = document.getElementById('loginEmail').value;
+        var password = document.getElementById('loginPassword').value;
 
-    // Call the loginUser function
-    loginUser(loginEmail, password);
-});
+        // Call the loginUser function
+        loginUser(loginEmail, password, elements);
+    });
+}
+
 
 function loginUser(loginEmail, password) {
     // Create request payload
@@ -114,19 +174,22 @@ function loginUser(loginEmail, password) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Handle the sign in form submission
-document.getElementById('signinForm').addEventListener('submit', function(event) {
-    // Prevent the form from being submitted normally and avoid reload the page
-    event.preventDefault();
+function handleSignInFormSubmission(elements){
+    document.getElementById('signinForm').addEventListener('submit', function(event) {
+        // Prevent the form from being submitted normally and avoid reload the page
+        event.preventDefault();
 
-    // Get username and password from the form
-    var signinEmail = document.getElementById('signinEmail').value;
-    var password = document.getElementById('signinPassword').value;
-    var signinFirstName = document.getElementById('signinFirstName').value;
-    var signinLastName = document.getElementById('signinLastName').value;
-    console.log(signinEmail, password, signinFirstName, signinLastName);
-    // Call the loginUser function
-    signinUser(signinEmail, password, signinFirstName, signinLastName);
-});
+        // Get username and password from the form
+        var signinEmail = document.getElementById('signinEmail').value;
+        var password = document.getElementById('signinPassword').value;
+        var signinFirstName = document.getElementById('signinFirstName').value;
+        var signinLastName = document.getElementById('signinLastName').value;
+        console.log(signinEmail, password, signinFirstName, signinLastName);
+        // Call the loginUser function
+        signinUser(signinEmail, password, signinFirstName, signinLastName);
+    });
+}
+
 
 function signinUser(signinEmail, password, signinFirstName, signinLastName) {
     // Create request payload
@@ -169,6 +232,9 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName) {
         console.error('Error:', error);
     });
 }
+
+////////////////////////////////////////////////////////////////////
+
 
 
 /* //implement this function for log out and also carry all logic for the login signin and logut to different js
