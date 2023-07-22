@@ -1,21 +1,15 @@
-    let map, directionsService, directionsRenderer;
+let map, directionsService, directionsRenderer, geocoder;
+let globalCounter = 0;
 
-    let globalCounter = 0;  // Declare a global counter
+async function handleButtonClick() {
+    const userInput = document.getElementById('user-input').value;
+    const data = await fetchData(userInput);
+    processText(data);
+}
 
-    //When user click to enter or press
-    function handleButtonClick() {
-        console.log("The Send Button is clicked.");
-        var userInput = getUserInput();
-        processUserInput(userInput);
-    }
-    //Getting what ever the user typed
-    function getUserInput() {
-        var userInput = document.getElementById('user-input').value;
-        return userInput;
-    }
-    //Sending the input to backend and calling processText() with the response
-    function processUserInput(userInput) {
-        fetch('http://localhost:8082/api/jp/gpt/analyze', {
+async function fetchData(userInput) {
+    try {
+        const response = await fetch('http://localhost:8082/api/jp/gpt/analyze', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -24,98 +18,80 @@
             body: JSON.stringify({
                 message: userInput
             })
-        })
-        .then(response => response.text())
-        .then(data => processText(data))
-        .catch((error) => {
-            console.error('Error:', error);
         });
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function processText(data) {
+    const request = {
+        origin: data.origin,
+        destination: data.destination,
+        travelMode: 'DRIVING'
+    };
+
+    routeDirection(request);
+
+    console.log("To see the format of the data" + data.stops);
+
+    if(Object.keys(data.stops).length > 0){
+        await displayStops(data.stops);
+        await plotStopsOnMap();
     }
 
-    //Handling the response
-    function processText(text) {
-        let data = JSON.parse(text);
+    const geocodedOrigin = await getGeocodedAddress(data.origin);
+    const geocodedDestination = await getGeocodedAddress(data.destination);
 
-        let request = {
-            origin: data.origin,
-            destination: data.destination,
-            travelMode: 'DRIVING'
-        };
-        console.log("Before sending to directionService, Origin: " + data.origin + "Destination: " + data.destination)
-        console.log(directionsService);
-        //Based on only origin and destination
-        routeDirection(request);
-        //if there are stop to be displayed
-        if(Object.keys(data.stops).length > 0){
-            displayStops(data.stops);
+    addPointToBar('origin', data.origin, true, geocodedOrigin);
+    addPointToBar('destination', data.destination, true, geocodedDestination);
+}
+
+function routeDirection(request) {
+    directionsService.route(request, function(result, status) {
+        if (status == 'OK') {
+            directionsRenderer.setDirections(result);
+        } else {
+            console.error('Directions request failed: ' + status);
         }
-
-        //get the geocoded address for origin and destination
-        //let geocodedOrigin = '';
-        //let geocodedDestination = '';
-
-        // Add origin and destination to the journey bar
-        addPointToBar('origin', data.origin, true, "geocodedOrigin");
-        addPointToBar('destination', data.destination, true, "geocodedDestination");
-    }
-    //Calling the directionsRenderer to display the route on the map
-    function routeDirection(request) {
-        directionsService.route(request, function(result, status) {
-            if (status == 'OK') {
-                directionsRenderer.setDirections(result);
-            } else {
-                console.error('Directions request failed: ' + status);
-            }
-        });
-    }
+    });
+}
 
 async function displayStops(stops) {
     let stopsList = document.getElementById('stops-list');
-    stopsList.innerHTML = ''; // Clear the list first
+    stopsList.innerHTML = '';
 
     for (let title in stops) {
-        let stopsListContent = `<h2>${title}</h2>`;
-        stopsListContent += '<ul>';
+        let stopsListContent = `<h2>${title}</h2><ul>`;
 
-        // Convert the list of stops to a list of promises
         for (const stop of stops[title]) {
             globalCounter++;
             let geocodedAddress = await getGeocodedAddress(stop);
-            let stopId = stop.replace(/ /g,'_') + '_' + Date.now();  // Create a unique ID for each stop
+            let stopId = stop.replace(/ /g,'_') + '_' + Date.now();
             stopsListContent += `<li draggable="true" ondragstart="drag(event)" id="${stopId}" data-stop-number="${globalCounter}" data-geocoded-address="${geocodedAddress}">${globalCounter}. ${stop}</li>`;
         }
 
         stopsListContent += '</ul>';
-
-        if (stopsListContent) {
-            stopsList.style.display = 'block';
-            stopsList.innerHTML += stopsListContent; // Append new content
-        } else {
-            stopsList.style.display = 'none';
-        }
+        stopsList.innerHTML += stopsListContent;
     }
 
-    plotStopsOnMap(stops);  // Plot the stops on the map
+    stopsList.style.display = stopsList.innerHTML ? 'block' : 'none';
 }
 
+async function plotStopsOnMap() {
+    let stopsListItems = document.getElementById('stops-list').getElementsByTagName('li');
 
-
-
-function plotStopsOnMap(stops) {
-    let stopsList = document.getElementById('stops-list');
-    let stopsListItems = stopsList.getElementsByTagName('li');
-
-    for (let i = 0; i < stopsListItems.length; i++) {
-        let item = stopsListItems[i];
+    for (let item of stopsListItems) {
         let geocodedAddress = item.getAttribute('data-geocoded-address');
 
         if (geocodedAddress) {
             let geocodedLocation = geocodedAddress.split(',');
-
-            var marker = new google.maps.Marker({
+            new google.maps.Marker({
                 map: map,
                 position: { lat: parseFloat(geocodedLocation[0]), lng: parseFloat(geocodedLocation[1]) },
-                label: item.getAttribute('data-stop-number') // use the data-stop-number attribute value as the marker label
+                label: item.getAttribute('data-stop-number')
             });
         } else if (geocodedAddress === "") {
             console.error('Geocode data not found for stop: ' + item.id);
@@ -124,22 +100,16 @@ function plotStopsOnMap(stops) {
 }
 
 
-// Function to get the geocoded latitude and longitude for a given stop
 function getGeocodedAddress(stop) {
-    return new Promise((resolve) => {  // removed "reject" since we are not using it
+    return new Promise((resolve) => {
+    console.log("Looking for geocoded adreess for stop: " + stop);
         geocoder.geocode({ 'address': stop }, function(results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
-                // Get the location object
                 let location = results[0].geometry.location;
-
-                // Get latitude and longitude
-                let lat = location.lat();
-                let lng = location.lng();
-
-                resolve(lat + ',' + lng);
+                resolve(location.lat() + ',' + location.lng());
             } else {
-                console.error('Geocode error: ' + status);  // log the error for debugging
-                resolve('');  // resolve with an empty string
+                console.error('Geocode error: ' + status);
+                resolve('');
             }
         });
     });
@@ -147,25 +117,7 @@ function getGeocodedAddress(stop) {
 
 
 
-
-
-
-    function removePoint(ev) {
-        let element = ev.target;
-        if (!element.classList.contains('origin-destination-point')) {
-            element.parentNode.removeChild(element);
-        }
-    }
-
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
-
-
+///////////////////////////////////////////////////////////////////////////////////
 function addPointToBar(id, text, isOriginDestination = false, geocodedAddress) {
     let spanElement = document.createElement('span');
     spanElement.setAttribute('class', 'journey-point');
@@ -187,6 +139,24 @@ function addPointToBar(id, text, isOriginDestination = false, geocodedAddress) {
         bar.insertBefore(spanElement, destinationPoint);
     }
 }
+
+    function removePoint(ev) {
+        let element = ev.target;
+        if (!element.classList.contains('origin-destination-point')) {
+            element.parentNode.removeChild(element);
+        }
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+
+
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
@@ -218,30 +188,9 @@ function drop(ev) {
     }
 }
 
-/*function swapNodes(node1, node2) {
-    // Do not swap if either node is an origin or destination point
-    if (node1.classList.contains('origin-destination-point') || node2.classList.contains('origin-destination-point')) {
-        return;
-    }
-
-    var parent1 = node1.parentNode;
-    var next1 = node1.nextSibling;
-    var parent2 = node2.parentNode;
-    var next2 = node2.nextSibling;
-
-    // If the nodes are siblings, swapping is easy
-    if (next1 === node2) {
-        parent1.insertBefore(node2, node1);
-    } else if (next2 === node1) {
-        parent2.insertBefore(node1, node2);
-    } else {
-        // If the nodes are not siblings, it's a bit more complicated
-        parent1.insertBefore(node2, next1);
-        parent2.insertBefore(node1, next2);
-    }
-}*/
 function swapNodes(node1, node2) {
     console.log("SWAPNODES IS INVOKED swapping " + node1 + "\n" + " and " + "\n" + node2)
+
     // Do not swap if either node is an origin or destination point
     if (node1.classList.contains('origin-destination-point') || node2.classList.contains('origin-destination-point')) {
         return;
@@ -254,11 +203,13 @@ function swapNodes(node1, node2) {
     // Move node1 to node2's original spot
     node2.parentNode.insertBefore(node1, node2);
 
-    // Move node2 to node1's original spot
-    marker.parentNode.insertBefore(node2, marker);
+    // Wait for the DOM to be updated, then move node2 to node1's original spot
+    setTimeout(() => {
+        marker.parentNode.insertBefore(node2, marker);
 
-    // Get rid of the marker
-    marker.parentNode.removeChild(marker);
+        // Get rid of the marker
+        marker.parentNode.removeChild(marker);
+    }, 0);  // 0 milliseconds delay, meaning run this code as soon as possible but after any pending changes have been made to the DOM
 }
 
 

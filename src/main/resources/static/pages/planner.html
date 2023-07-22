@@ -12,8 +12,8 @@ window.initMap = function() {
     });
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
     geocoder = new google.maps.Geocoder();
+    directionsRenderer.setMap(map);
 }
 </script>
 
