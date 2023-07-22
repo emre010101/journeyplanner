@@ -15,9 +15,10 @@
     }
     //Sending the input to backend and calling processText() with the response
     function processUserInput(userInput) {
-        fetch('http://localhost:8082/api/journey', {
+        fetch('http://localhost:8082/api/jp/gpt/analyze', {
             method: 'POST',
             headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -30,16 +31,7 @@
             console.error('Error:', error);
         });
     }
-    //Calling the directionsRenderer to display the route on the map
-    function routeDirection(request) {
-        directionsService.route(request, function(result, status) {
-            if (status == 'OK') {
-                directionsRenderer.setDirections(result);
-            } else {
-                console.error('Directions request failed: ' + status);
-            }
-        });
-    }
+
     //Handling the response
     function processText(text) {
         let data = JSON.parse(text);
@@ -66,7 +58,16 @@
         addPointToBar('origin', data.origin, true, "geocodedOrigin");
         addPointToBar('destination', data.destination, true, "geocodedDestination");
     }
-
+    //Calling the directionsRenderer to display the route on the map
+    function routeDirection(request) {
+        directionsService.route(request, function(result, status) {
+            if (status == 'OK') {
+                directionsRenderer.setDirections(result);
+            } else {
+                console.error('Directions request failed: ' + status);
+            }
+        });
+    }
 
 async function displayStops(stops) {
     let stopsList = document.getElementById('stops-list');
@@ -306,12 +307,6 @@ function swapNodes(node1, node2) {
         console.log('Calculating the route with the following stops: ', route);
         // Calculate the route with Google Maps API
     }
-
-
-
-
-
-
 
 
 

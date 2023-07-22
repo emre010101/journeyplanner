@@ -21,6 +21,7 @@ public class LogoutService implements LogoutHandler {
       HttpServletResponse response,
       Authentication authentication
   ) {
+    System.out.println("The log out service is invoked!!");
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
@@ -30,6 +31,7 @@ public class LogoutService implements LogoutHandler {
     var storedToken = tokenRepository.findByToken(jwt)
         .orElse(null);
     if (storedToken != null) {
+      System.out.println("The user token is found and it will set to be expired!");
       storedToken.setExpired(true);
       storedToken.setRevoked(true);
       tokenRepository.save(storedToken);

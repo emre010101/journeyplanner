@@ -21,16 +21,6 @@ window.initMap = function() {
 <body ondrop="drop(event)" ondragover="allowDrop(event)">
 
 <nav id="nav-bar">
-    <div id="site-name">
-        <a href="../index.html">Journey Planner</a>
-    </div>
-    <div id="nav-links">
-        <a href="../index.html">Home</a>
-        <a href="communityRoom.html">Community Room</a>
-        <span id="user-greeting"></span> <!--
-        <button id="sign-in">Sign In</button>
-        <button id="log-in">Log In</button> -->
-    </div>
 </nav>
 
 <div class="container">
@@ -49,11 +39,20 @@ window.initMap = function() {
     <div id="journey-bar" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 </div>
 
+<!-- Log In Modal -->
+<div id="logInModal" class="modal">
+</div>
+
+<!-- Sign In Modal -->
+<div id="signInModal" class="modal">
+</div>
+
 
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">
 </script>
 <script src="../Script/planner.js"></script>
+<script src="../Script/navbar.js"></script>
 
 </body>
 </html>

@@ -6,23 +6,27 @@ var loggedInUser = null; //'emre.kavak3938@gmail.com'
 window.addEventListener("load", function() {
     console.log("Testing");
     Promise.all([ //Waiting to load the other components
-        loadComponent('nav-bar', 'pages/navbar.html'),
-        loadComponent('logInModal', 'pages/loginModal.html'),
-        loadComponent('signInModal', 'pages/signinModal.html')
+        loadComponent('nav-bar', '../pages/navbar.html'),
+        loadComponent('logInModal', '../pages/loginModal.html'),
+        loadComponent('signInModal', '../pages/signinModal.html')
     ])
     .then(() => {
 
         var elements = assignButtonAndModals();
         assignEventListeners(elements);
 
-        // Set the page state depending on the logged in user
-        setPageState(loggedInUser, elements);
+        var token = localStorage.getItem('accessToken');
+        loggedInUser = localStorage.getItem('loggedInUser');
 
-        // Handle the login form submission
-        handleLoginFormSubmission(elements);
+        if(token && loggedInUser){
+            console.log("User is found in the local storage!!");
+            // Set the page state depending on the logged in user
+            setPageState(loggedInUser, elements);
+        }else{
+            console.log("User is not found in the local storage!");
+        }
 
-        //Handle the sign-in form submission
-        handleSignInFormSubmission(elements);
+
     })
     .catch((error) => {
         console.error("Error: ", error);
@@ -59,16 +63,23 @@ function assignButtonAndModals() {
     //Get the buttons that opens the modals
     logInButton = document.getElementById("log-in");
     signInButton = document.getElementById("sign-in");
+    logOutButton = document.getElementById("log-out");
 
     //Get the <span> elements that closes the modals
     closeButtons = document.getElementsByClassName("close");
 
     //Return the variables as an object
-    return {logInModal, signInModal, logInButton, signInButton, closeButtons};
+    return {logInModal, signInModal, logInButton, signInButton, logOutButton, closeButtons};
 }
 
 //Event Listeners will be added after they are returned
 function assignEventListeners(elements){
+
+    // Handle the login form submission
+    handleLoginFormSubmission(elements);
+
+    //Handle the sign-in form submission
+    handleSignInFormSubmission(elements);
 
     //When the user clicks it, open the modal
     elements.logInButton.onclick = function(){
@@ -77,6 +88,10 @@ function assignEventListeners(elements){
     }
     elements.signInButton.onclick = function() {
         elements.signInModal.style.display = "block";
+    }
+
+    elements.logOutButton.onclick = function() {
+        logOutUser(elements);
     }
 
     // When the user clicks on <span> (x), close the modal
@@ -221,6 +236,7 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName, elem
 }
 
 function setPageState(loggedInUser, elements) {
+
     var logOutButton = document.getElementById('log-out');
     var userGreeting = document.getElementById('user-greeting');
 
@@ -246,25 +262,29 @@ function setPageState(loggedInUser, elements) {
 ////////////////////////////////////////////////////////////////////
 
 
+function logOutUser(elements){
 
-/* //implement this function for log out and also carry all logic for the login signin and logut to different js
-fetch('http://localhost:8082/api/jp/auth/logout', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
-    'Content-Type': 'application/json'
-  },
-})
-.then(response => {
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  // Remove the access token from local storage
-  localStorage.removeItem('accessToken');
-})
-.catch((error) => {
-  console.error('Error:', error);
-});
+    fetch('http://localhost:8082/api/jp/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // Remove the access token from local storage
+      loggedInUser = null;
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('loggedInUser');
+      setPageState(loggedInUser, elements)
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
-*/
+
 
