@@ -7,8 +7,8 @@ window.addEventListener("load", function() {
     console.log("Testing");
     Promise.all([ //Waiting to load the other components
         loadComponent('nav-bar', 'pages/navbar.html'),
-        loadComponent('loginModal', 'pages/loginModal.html'),
-        loadComponent('signinModal', 'pages/signinModal.html')
+        loadComponent('logInModal', 'pages/loginModal.html'),
+        loadComponent('signInModal', 'pages/signinModal.html')
     ])
     .then(() => {
 
@@ -30,50 +30,53 @@ window.addEventListener("load", function() {
 });
 
 function loadComponent(elementId, componentPath) {
-    return new Promise((resolve, reject) => {//avoid asynchronous loading
+    return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
 
         xhttp.onload = function() {
-            document.getElementById(elementId).innerHTML = this.responseText;
-            resolve(); //The promise is resolved when the component has been loaded
+            const container = document.getElementById(elementId);
+            container.innerHTML = this.responseText;
+            // Using setTimeout to wait until the new HTML is inserted into the DOM
+            setTimeout(() => resolve(), 0);
         }
 
-        xhttp.onerror = reject; //The promise is rejected if there's an error
+        xhttp.onerror = reject;
 
         xhttp.open("GET", componentPath, true);
         xhttp.send();
     });
 }
 
+
 function assignButtonAndModals() {
     //Declare your variables here
-    var loginModal, signinModal, loginButton, signInButton, closeButtons;
+    var logInModal, signInModal, logInButton, signInButton, closeButtons;
 
     //Get the modals
-    loginModal = document.getElementById("loginModal");
-    signinModal = document.getElementById("signinModal");
+    logInModal = document.getElementById("logInModal");
+    signInModal = document.getElementById("signInModal");
 
     //Get the buttons that opens the modals
-    loginButton = document.getElementById("log-in");
-    signinButton = document.getElementById("sign-in");
+    logInButton = document.getElementById("log-in");
+    signInButton = document.getElementById("sign-in");
 
     //Get the <span> elements that closes the modals
     closeButtons = document.getElementsByClassName("close");
 
     //Return the variables as an object
-    return {loginModal, signinModal, loginButton, signInButton, closeButtons};
+    return {logInModal, signInModal, logInButton, signInButton, closeButtons};
 }
 
 //Event Listeners will be added after they are returned
 function assignEventListeners(elements){
 
     //When the user clicks it, open the modal
-    elements.loginButton.onclick = function(){
+    elements.logInButton.onclick = function(){
         console.log("Login is clicked");
-        elements.loginModal.style.display = "block";
+        elements.logInModal.style.display = "block";
     }
-    elements.signinButton.onclick = function() {
-        elements.signinModal.style.display = "block";
+    elements.signInButton.onclick = function() {
+        elements.signInModal.style.display = "block";
     }
 
     // When the user clicks on <span> (x), close the modal
@@ -85,30 +88,11 @@ function assignEventListeners(elements){
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-      if (event.target == loginModal) {
-        elements.loginModal.style.display = "none";
-      } else if (event.target == signinModal) {
-        elements.signinModal.style.display = "none";
+      if (event.target == logInModal) {
+        elements.logInModal.style.display = "none";
+      } else if (event.target == signInModal) {
+        elements.signInModal.style.display = "none";
       }
-    }
-}
-
-
-
-function setPageState(loggedInUser, elements) {
-    var logOutButton = document.getElementById('log-out')
-    var userGreeting = document.getElementById('user-greeting');
-
-    if (loggedInUser) {
-        elements.signInButton.style.display = 'none';
-        elements.logInButton.style.display = 'none';
-        logOutButton.style.display = 'inline-block';
-        userGreeting.textContent = 'Welcome, ' + loggedInUser;
-    } else {
-        logOutButton.style.display = 'none';
-        elements.signInButton.style.display = 'inline-block';
-        elements.logInButton.style.display = 'inline-block';
-        userGreeting.textContent = '';
     }
 }
 
@@ -132,7 +116,7 @@ function handleLoginFormSubmission(elements) {
 }
 
 
-function loginUser(loginEmail, password) {
+function loginUser(loginEmail, password, elements) {
     // Create request payload
     var payload = {
         email: loginEmail,
@@ -161,11 +145,13 @@ function loginUser(loginEmail, password) {
         // Handle response here. If login is successful,
         // set the loggedInUser variable and update the UI.
         loggedInUser = loginEmail;
-        loginModal.style.display = "none";
-        window.onload();
+        elements.logInModal.style.display = "none";
+        setPageState(loggedInUser, elements);
 
         //Store JWT token in localStorege
         localStorage.setItem('accessToken', data.access_token);
+        localStorage.setItem('loggedInUser', loggedInUser);
+
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -186,12 +172,12 @@ function handleSignInFormSubmission(elements){
         var signinLastName = document.getElementById('signinLastName').value;
         console.log(signinEmail, password, signinFirstName, signinLastName);
         // Call the loginUser function
-        signinUser(signinEmail, password, signinFirstName, signinLastName);
+        signinUser(signinEmail, password, signinFirstName, signinLastName, elements);
     });
 }
 
 
-function signinUser(signinEmail, password, signinFirstName, signinLastName) {
+function signinUser(signinEmail, password, signinFirstName, signinLastName, elements) {
     // Create request payload
     var payload = {
         email: signinEmail,
@@ -222,16 +208,40 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName) {
         // Handle response here. If login is successful,
         // set the loggedInUser variable and update the UI.
         loggedInUser = signinEmail;
-        signinModal.style.display = "none";
-        window.onload();
+        elements.signInModal.style.display = "none";
+        setPageState(loggedInUser, elements);
 
         //Store JWT token in localStorege
         localStorage.setItem('accessToken', data.access_token);
+        localStorage.setItem('loggedInUser', loggedInUser);
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
+
+function setPageState(loggedInUser, elements) {
+    var logOutButton = document.getElementById('log-out');
+    var userGreeting = document.getElementById('user-greeting');
+
+    if (!elements.signInButton || !elements.logInButton || !logOutButton || !userGreeting) {
+        console.error('One or more elements are missing.');
+        return;
+    }
+
+    if (loggedInUser) {
+        elements.signInButton.style.display = 'none';
+        elements.logInButton.style.display = 'none';
+        logOutButton.style.display = 'inline-block';
+        userGreeting.textContent = 'Welcome, ' + loggedInUser;
+    } else {
+        logOutButton.style.display = 'none';
+        elements.signInButton.style.display = 'inline-block';
+        elements.logInButton.style.display = 'inline-block';
+        userGreeting.textContent = '';
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////
 
