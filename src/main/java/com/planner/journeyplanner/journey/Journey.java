@@ -1,5 +1,6 @@
 package com.planner.journeyplanner.journey;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,8 +9,13 @@ import lombok.NoArgsConstructor;
 
 import com.planner.journeyplanner.user.User;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
+/*
+* date: 23/07/2023
+* author: Emre Kavak
+* Journey.class
+* It's a model class used for Journey DTO
+* */
 
 @Data
 @Builder
@@ -38,6 +44,7 @@ public class Journey {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     // additional fields for future use

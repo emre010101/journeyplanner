@@ -439,7 +439,6 @@ async function sentJourneyToServer() {
         staticMapUrl: staticMapUrl,
         journeyDetails: journeyDetails,
         journeyTitle: journeyTitle,
-        // assuming 'createUrlForGoogleMap' returns the url
         urlToGoGMap: urlToGoGMap
     };
 
