@@ -1,6 +1,5 @@
 package com.planner.journeyplanner.Gpt;
 
-import com.planner.journeyplanner.Gpt.GptService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;

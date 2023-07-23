@@ -440,7 +440,7 @@ async function sentJourneyToServer() {
         journeyDetails: journeyDetails,
         journeyTitle: journeyTitle,
         // assuming 'createUrlForGoogleMap' returns the url
-        urlToGoGMap: createUrlForGoogleMap(journeyDetails)
+        urlToGoGMap: urlToGoGMap
     };
 
     try {

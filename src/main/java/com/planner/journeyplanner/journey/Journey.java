@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.planner.journeyplanner.user.User;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,14 +23,17 @@ public class Journey {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name = "journey_title")
     private String journeyTitle;
 
-    @Column(length = 2048)
+    @Column(name = "static_map_url", length = 2048)
     private String staticMapUrl;
 
+    @Column(name = "url_to_gogmap")
     private String urlToGoGMap;
 
-    @Column(columnDefinition = "json")
+    @Column(name = "journey_details", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private JourneyDetails journeyDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,8 +41,10 @@ public class Journey {
     private User user;
 
     // additional fields for future use
+    @Column(name = "description")
     private String description;
 
-    @Column(length = 2048)
+    @Column(name = "photo_url", length = 2048)
     private String photoUrl;
+
 }
