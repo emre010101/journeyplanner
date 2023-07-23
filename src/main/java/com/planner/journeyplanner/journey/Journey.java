@@ -1,19 +1,41 @@
 package com.planner.journeyplanner.journey;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data //This annotation will create getter and setters
-@Builder //To build the object using design patter builder
-@NoArgsConstructor //Will create constructor without arguments
-@AllArgsConstructor //all the arguments constructor
+import com.planner.journeyplanner.user.User;
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "journey")
 public class Journey {
 
-    private String staticMapUrl;
-    private JourneyDetails journeyDetails;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
     private String journeyTitle;
+
+    @Column(length = 2048)
+    private String staticMapUrl;
+
     private String urlToGoGMap;
 
+    @Column(columnDefinition = "json")
+    private JourneyDetails journeyDetails;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // additional fields for future use
+    private String description;
+
+    @Column(length = 2048)
+    private String photoUrl;
 }

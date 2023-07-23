@@ -1,5 +1,6 @@
 package com.planner.journeyplanner.user;
 
+import com.planner.journeyplanner.journey.Journey;
 import com.planner.journeyplanner.token.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<Journey> journeys;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
