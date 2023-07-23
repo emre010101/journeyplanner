@@ -2,6 +2,7 @@ let map, directionsService, directionsRenderer, geocoder;
 let globalCounter = 0;
 
 async function handleButtonClick() {
+    console.log("Handling the user click");
     const userInput = document.getElementById('user-input').value;
     const data = await fetchData(userInput);
     processText(data);
@@ -45,19 +46,148 @@ async function processText(data) {
     const geocodedOrigin = await getGeocodedAddress(data.origin);
     const geocodedDestination = await getGeocodedAddress(data.destination);
 
-    addPointToBar('origin', data.origin, true, geocodedOrigin);
     addPointToBar('destination', data.destination, true, geocodedDestination);
+    addPointToBar('origin', data.origin, true, geocodedOrigin);
 }
 
-function routeDirection(request) {
+function routeDirection(request, displayUrl = false) {
+    // Clear out the existing route
+    directionsRenderer.setDirections({routes: []});
+
     directionsService.route(request, function(result, status) {
         if (status == 'OK') {
             directionsRenderer.setDirections(result);
+
+            // At this point, we just call 'computeJourneyDetails' and pass the 'result' to it
+            let journeyDetails = computeJourneyDetails(result);
+
+            console.log(journeyDetails);
+
+            displayJourneyDetails(journeyDetails);
+
+            if(displayUrl){
+                createUrlForGoogleMap(journeyDetails);
+            }
+
         } else {
             console.error('Directions request failed: ' + status);
         }
     });
 }
+
+function computeJourneyDetails(result) {
+    let totalDurationSeconds = 0;
+    let totalDistanceMeters = 0;
+
+    let legs = result.routes[0].legs.map((leg, index) => {
+        totalDurationSeconds += leg.duration.value;
+        totalDistanceMeters += leg.distance.value;
+
+        let legDurationHours = Math.round((leg.duration.value / 3600) * 100) / 100;
+        let legDurationMinutes = Math.round(((leg.duration.value % 3600) / 60) * 100) / 100;
+        let legDistanceKilometers = Math.round((leg.distance.value / 1000) * 100) / 100;
+
+        // Extract the start and end location coordinates
+        let startLocationCoordinates = {
+            lat: leg.start_location.lat(),
+            lng: leg.start_location.lng()
+        };
+        let endLocationCoordinates = {
+            lat: leg.end_location.lat(),
+            lng: leg.end_location.lng()
+        };
+
+        return {
+            legNumber: index + 1,
+            startLocation: leg.start_address,
+            endLocation: leg.end_address,
+            startLocationCoordinates,  // include in the returned object
+            endLocationCoordinates,    // include in the returned object
+            durationHours: legDurationHours,
+            durationMinutes: legDurationMinutes,
+            distanceKilometers: legDistanceKilometers
+        };
+    });
+
+    let totalDurationHours = Math.round((totalDurationSeconds / 3600) * 100) / 100;
+    let totalDurationMinutes = Math.round(((totalDurationSeconds % 3600) / 60) * 100) / 100;
+    let totalDistanceKilometers = Math.round((totalDistanceMeters / 1000) * 100) / 100;
+
+    let journeyDetails = {
+        totalDurationHours,
+        totalDurationMinutes,
+        totalDistanceKilometers,
+        legs
+    };
+
+    return journeyDetails;
+}
+
+
+function displayJourneyDetails(journeyDetails) {
+    let calculateDiv = document.getElementById('calculate');
+
+    // Clear out the current contents
+    calculateDiv.innerHTML = '';
+
+    // Create elements to display total duration and distance
+    let totalDurationElement = document.createElement('p');
+    totalDurationElement.textContent = 'Total Duration: ' + journeyDetails.totalDurationHours + ' hours ' + journeyDetails.totalDurationMinutes + ' minutes';
+    let totalDistanceElement = document.createElement('p');
+    totalDistanceElement.textContent = 'Total Distance: ' + journeyDetails.totalDistanceKilometers + ' kilometers';
+
+    // Append these elements to the div
+    calculateDiv.appendChild(totalDurationElement);
+    calculateDiv.appendChild(totalDistanceElement);
+
+    // For each leg, create elements to display the leg's details
+    journeyDetails.legs.forEach(leg => {
+        let legElement = document.createElement('div');
+        let legTitle = document.createElement('h3');
+        let legDuration = document.createElement('p');
+        let legDistance = document.createElement('p');
+
+        legTitle.textContent = 'Leg ' + leg.legNumber + ': ' + leg.startLocation +'\n' + ' to ' + '\n' + leg.endLocation;
+        legDuration.textContent = 'Duration: ' + leg.durationHours + ' hours ' + leg.durationMinutes + ' minutes';
+        legDistance.textContent = 'Distance: ' + leg.distanceKilometers + ' kilometers';
+
+        legElement.appendChild(legTitle);
+        legElement.appendChild(legDuration);
+        legElement.appendChild(legDistance);
+
+        calculateDiv.appendChild(legElement);
+    });
+
+    // Show the div
+    calculateDiv.style.display = 'block';
+}
+
+function createUrlForGoogleMap(journeyDetails) {
+    console.log("Creating the Url for Google Map!");
+    // Construct the URL for Google Maps
+    let googleMapsUrl = "https://www.google.com/maps/dir/";
+    journeyDetails.legs.forEach((leg, index) => {
+        // Use the latitude and longitude from startLocationCoordinates
+        googleMapsUrl += `${leg.startLocationCoordinates.lat},${leg.startLocationCoordinates.lng}/`;
+        if (index === journeyDetails.legs.length - 1) {
+            // Add the destination (end location of the last leg) to the URL
+            // Use the latitude and longitude from endLocationCoordinates
+            googleMapsUrl += `${leg.endLocationCoordinates.lat},${leg.endLocationCoordinates.lng}`;
+        }
+    });
+
+    // Get the "Display on Google Map" button
+    let googleMapsButton = document.getElementById('displayOn-google');
+
+    // Set the href attribute of the button to the Google Maps URL
+    googleMapsButton.setAttribute('href', googleMapsUrl);
+
+    console.log("Here is created url: " + googleMapsUrl);
+    // Make the button visible
+    googleMapsButton.style.display = "block";
+}
+
+
 
 async function displayStops(stops) {
     let stopsList = document.getElementById('stops-list');
@@ -240,6 +370,49 @@ function swapNodes(node1, node2) {
     saveButton.addEventListener('click', saveRoute);
     calculateButton.addEventListener('click', calculateRoute);
 
+
+
+    function calculateRoute() {
+        var journeyPoints = Array.from(document.getElementById('journey-bar').children);
+        var route = journeyPoints.map(point => point.innerText);
+        console.log('Calculating the route with the following stops: ', route);
+
+        // Calculate the route with Google Maps API
+        let payload = createRouteWithStopPointsInOrder();
+
+        routeDirection(payload, displayUrl = true);
+
+    }
+
+    //Getting all the elements in the journey bar and use them in the order they are displayed to create a payload
+    function createRouteWithStopPointsInOrder() {
+      let journeyPoints = document.querySelectorAll('.journey-point');
+      let payload = {
+        origin: null,
+        destination: null,
+        waypoints: [],
+        travelMode: 'DRIVING'
+      };
+
+      journeyPoints.forEach((point, index) => {
+        let address = point.getAttribute('data-geocoded-address');
+        if (index === 0) { // The first element is the origin
+          payload.origin = address;
+        } else if (index === journeyPoints.length - 1) { // The last element is the destination
+          payload.destination = address;
+        } else { // The other elements are waypoints
+          payload.waypoints.push({
+            location: address,
+            stopover: true
+          });
+        }
+      });
+
+      return payload;
+    }
+
+
+
     // Write your new functions
     function saveRoute() {
         // Here you can implement the logic for saving the current route
@@ -249,16 +422,6 @@ function swapNodes(node1, node2) {
         console.log('Saving the following route: ', route);
         // Save the route array somewhere, like a database or local storage
     }
-
-    function calculateRoute() {
-        // Here you can implement the logic for calculating the route with Google Maps API
-        // You can get all the elements in the journey bar and use them in the order they are displayed
-        var journeyPoints = Array.from(document.getElementById('journey-bar').children);
-        var route = journeyPoints.map(point => point.innerText);
-        console.log('Calculating the route with the following stops: ', route);
-        // Calculate the route with Google Maps API
-    }
-
 
 
     //initialising the field

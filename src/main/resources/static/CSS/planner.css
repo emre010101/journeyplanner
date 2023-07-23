@@ -36,6 +36,27 @@ body {
     gap: 10px;
 }
 
+.button {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    text-decoration: none;
+}
+
+
 #stops-list {
     width: 200px;
     background-color: #f1f1f1;
@@ -57,3 +78,29 @@ body {
     background-color: #eee;
     cursor: move;
 }
+
+
+#calculate {
+    padding: 20px;
+    overflow-y: auto;
+    height: 80vh;
+    border-left: 1px solid #ccc;
+    margin-left: 20px;
+}
+
+#calculate h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#calculate p {
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+#calculate div {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+

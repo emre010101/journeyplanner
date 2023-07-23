@@ -27,13 +27,15 @@ window.initMap = function() {
     <div id="map-and-stops-container">
         <div id="stops-list" style="display:none;"></div>
         <div id="map"></div>
+        <div id="calculate" style="display:none;"></div> <!-- Added this line -->
     </div>
     <div id="chat-input-area">
         <textarea id="user-input" placeholder="Enter your journey details here..."></textarea>
         <div id="buttons-area">
-            <button id="send-button">Send</button>
-            <button id="save-button">Save Route</button>
-            <button id="calculate-button">Calculate Route</button>
+            <button id="send-button" class="button">Send</button>
+            <button id="save-button" class="button">Save Route</button>
+            <button id="calculate-button" class="button">Calculate Route</button>
+            <a id="displayOn-google" style="display:none;" class="button" target="_blank">Display on Google Map</a>
         </div>
     </div>
     <div id="journey-bar" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
