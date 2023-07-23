@@ -1,4 +1,8 @@
+//For rendering the map and calling google api for services
 let map, directionsService, directionsRenderer, geocoder;
+//To share and save
+let journeyDetails, createdMapImage, urlToGoGMap;
+//For labelling the Stop Points
 let globalCounter = 0;
 
 async function handleButtonClick() {
@@ -38,14 +42,17 @@ async function processText(data) {
 
     console.log("To see the format of the data" + data.stops);
 
+    //If there are any stops display them on the list and also create markers on the map
     if(Object.keys(data.stops).length > 0){
         await displayStops(data.stops);
         await plotStopsOnMap();
     }
 
+    //Getting the geocoded address of origin and destination
     const geocodedOrigin = await getGeocodedAddress(data.origin);
     const geocodedDestination = await getGeocodedAddress(data.destination);
 
+    //Adding them to bar
     addPointToBar('destination', data.destination, true, geocodedDestination);
     addPointToBar('origin', data.origin, true, geocodedOrigin);
 }
@@ -58,14 +65,14 @@ function routeDirection(request, displayUrl = false) {
         if (status == 'OK') {
             directionsRenderer.setDirections(result);
 
-            // At this point, we just call 'computeJourneyDetails' and pass the 'result' to it
-            let journeyDetails = computeJourneyDetails(result);
-
-            console.log(journeyDetails);
-
-            displayJourneyDetails(journeyDetails);
-
             if(displayUrl){
+                // At this point, just calling 'computeJourneyDetails' and pass the 'result' to it
+                journeyDetails = computeJourneyDetails(result); //save in global to reuse
+
+                console.log(journeyDetails);
+
+                displayJourneyDetails(journeyDetails);
+
                 createUrlForGoogleMap(journeyDetails);
             }
 
@@ -185,6 +192,8 @@ function createUrlForGoogleMap(journeyDetails) {
     console.log("Here is created url: " + googleMapsUrl);
     // Make the button visible
     googleMapsButton.style.display = "block";
+
+    urlToGoGMap = googleMapsUrl; // Saving the URL to use in save button.
 }
 
 
@@ -361,13 +370,9 @@ function swapNodes(node1, node2) {
 
 
 
-    //Buttons to display and save the route
-    // Get your new buttons
-    var saveButton = document.getElementById('save-button');
+
     var calculateButton = document.getElementById('calculate-button');
 
-    // Add event listeners for your new buttons
-    saveButton.addEventListener('click', saveRoute);
     calculateButton.addEventListener('click', calculateRoute);
 
 
@@ -381,7 +386,6 @@ function swapNodes(node1, node2) {
         let payload = createRouteWithStopPointsInOrder();
 
         routeDirection(payload, displayUrl = true);
-
     }
 
     //Getting all the elements in the journey bar and use them in the order they are displayed to create a payload
@@ -411,17 +415,81 @@ function swapNodes(node1, node2) {
       return payload;
     }
 
+    //Buttons to display and save the route
+    var saveButton = document.getElementById('save-button');
+    // Add event listeners for your new buttons
+    saveButton.addEventListener('click', saveRoute);
 
+document.getElementById('saveAndShare').addEventListener('click', sentJourneyToServer);
 
-    // Write your new functions
-    function saveRoute() {
-        // Here you can implement the logic for saving the current route
-        // You can get all the elements in the journey bar and save them in the order they are displayed
-        var journeyPoints = Array.from(document.getElementById('journey-bar').children);
-        var route = journeyPoints.map(point => point.innerText);
-        console.log('Saving the following route: ', route);
-        // Save the route array somewhere, like a database or local storage
+async function saveRoute() {
+    document.getElementById('saveDialog').style.display = 'block';
+}
+
+async function sentJourneyToServer() {
+    console.log("Save is invoked the, info: staticMapUrl, journeyDetails and urlToGoGMap is sending to server!!")
+    // get the staticMapUrl
+    var staticMapUrl = createStaticMapUrl(journeyDetails);
+
+    // get the journey title entered by the user
+    var journeyTitle = document.getElementById('title').value;
+
+    // gather all data to send to server
+    var dataToSend = {
+        staticMapUrl: staticMapUrl,
+        journeyDetails: journeyDetails,
+        journeyTitle: journeyTitle,
+        // assuming 'createUrlForGoogleMap' returns the url
+        urlToGoGMap: createUrlForGoogleMap(journeyDetails)
+    };
+
+    try {
+        const response = await fetch('http://localhost:8082/api/jp/journey/create', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        });
+
+        const responseData = await response.text();
+        console.log(responseData);
+
+        // redirect the user to the communityRoom.html
+        //window.location.href = "communityRoom.html";
+    } catch (error) {
+        console.error('Error:', error);
     }
+}
+
+
+function createStaticMapUrl(journeyDetails) {
+    const apiKey = 'AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE';  // Replace with your own Google Maps API key
+    const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?';
+
+    let path = 'path=color:0x0000ff|weight:5';
+
+    journeyDetails.legs.forEach((leg, index) => {
+        // Use the latitude and longitude from startLocationCoordinates
+        path += `|${leg.startLocationCoordinates.lat},${leg.startLocationCoordinates.lng}`;
+        if (index === journeyDetails.legs.length - 1) {
+            // Add the destination (end location of the last leg) to the path
+            // Use the latitude and longitude from endLocationCoordinates
+            path += `|${leg.endLocationCoordinates.lat},${leg.endLocationCoordinates.lng}`;
+        }
+    });
+
+    // Define map size, in this case, 600x600
+    let size = 'size=600x600';
+
+    // Construct the full URL
+    let staticMapUrl = `${baseUrl}${size}&${path}&key=${apiKey}`;
+
+    console.log("Created the url to display: " + staticMapUrl)
+    return staticMapUrl;
+}
+
 
 
     //initialising the field

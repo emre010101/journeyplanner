@@ -49,6 +49,19 @@ window.initMap = function() {
 <div id="signInModal" class="modal">
 </div>
 
+<!-- The Modal -->
+<div id="saveDialog" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="saveForm">
+            <label for="title">Journey Title:</label><br>
+            <input type="text" id="title" name="title"><br>
+            <button id="saveAndShare" type="button">Save and Share</button>
+        </form>
+    </div>
+</div>
+
 
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByDPWpC-sYKrLNvWjPd43qvdXWcTZKkDE&callback=initMap">
