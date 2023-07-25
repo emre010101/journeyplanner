@@ -1,0 +1,56 @@
+.journey-container {
+  width: 100%;
+  padding: 20px;
+}
+
+.journey-row {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.journey-row h2, .journey-row p {
+  margin: 0;
+  font-size: 20px;
+  color: #666;
+}
+
+.journey-row img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin: 20px 0;
+}
+
+.journey-row .journey-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.journey-row .journey-actions .likes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.journey-row .journey-actions button {
+  padding: 10px 20px;
+  color: #fff;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 16px;
+  transition-duration: 0.4s;
+  margin-bottom: 10px;
+}
+
+.journey-row .journey-actions button:hover {
+  background-color: #0069D9;
+}
