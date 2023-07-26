@@ -9,6 +9,7 @@ async function handleButtonClick() {
     console.log("Handling the user click");
     const userInput = document.getElementById('user-input').value;
     const data = await fetchData(userInput);
+    document.getElementById('calculate-button').style.display = 'block';
     processText(data);
 }
 
@@ -154,7 +155,7 @@ function displayJourneyDetails(journeyDetails) {
         let legDuration = document.createElement('p');
         let legDistance = document.createElement('p');
 
-        legTitle.textContent = 'Leg ' + leg.legNumber + ': ' + leg.startLocation +'\n' + ' to ' + '\n' + leg.endLocation;
+        legTitle.textContent = 'Leg ' + leg.legNumber + ': ' + leg.startLocation +'<br> to <br>' + ' to ' + '<br> to <br>' + leg.endLocation;
         legDuration.textContent = 'Duration: ' + leg.durationHours + ' hours ' + leg.durationMinutes + ' minutes';
         legDistance.textContent = 'Distance: ' + leg.distanceKilometers + ' kilometers';
 
@@ -386,6 +387,8 @@ function swapNodes(node1, node2) {
         let payload = createRouteWithStopPointsInOrder();
 
         routeDirection(payload, displayUrl = true);
+        //Display the save button after calculating the journey.
+        document.getElementById('save-button').style.display = 'block';
     }
 
     //Getting all the elements in the journey bar and use them in the order they are displayed to create a payload
