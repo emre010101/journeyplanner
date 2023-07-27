@@ -2,6 +2,8 @@
 let map, directionsService, directionsRenderer, geocoder;
 //To share and save
 let journeyDetails, createdMapImage, urlToGoGMap;
+// Define the journeyDescription as a global variable
+let journeyDescription = '';
 //For labelling the Stop Points
 let globalCounter = 0;
 
@@ -54,21 +56,21 @@ async function processText(data) {
     const geocodedDestination = await getGeocodedAddress(data.destination);
 
     //Adding them to bar
-    addPointToBar('destination', data.destination, true, geocodedDestination);
-    addPointToBar('origin', data.origin, true, geocodedOrigin);
+    addPointToBar('destination', data.destination, true, geocodedDestination, 'Destination');
+    addPointToBar('origin', data.origin, true, geocodedOrigin, 'Origin');
 }
 
-function routeDirection(request, displayUrl = false) {
+function routeDirection(payload, { titles = [] } = {}, displayUrl = false) {
     // Clear out the existing route
     directionsRenderer.setDirections({routes: []});
 
-    directionsService.route(request, function(result, status) {
+    directionsService.route(payload, function(result, status) {
         if (status == 'OK') {
             directionsRenderer.setDirections(result);
 
             if(displayUrl){
                 // At this point, just calling 'computeJourneyDetails' and pass the 'result' to it
-                journeyDetails = computeJourneyDetails(result); //save in global to reuse
+                journeyDetails = computeJourneyDetails(result, titles); //save in global to reuse
 
                 console.log(journeyDetails);
 
@@ -83,7 +85,7 @@ function routeDirection(request, displayUrl = false) {
     });
 }
 
-function computeJourneyDetails(result) {
+function computeJourneyDetails(result, titles) {
     let totalDurationSeconds = 0;
     let totalDistanceMeters = 0;
 
@@ -109,6 +111,8 @@ function computeJourneyDetails(result) {
             legNumber: index + 1,
             startLocation: leg.start_address,
             endLocation: leg.end_address,
+            startTitle: titles[index],  // Include start title in the returned object
+            endTitle: titles[index + 1] ? titles[index + 1] : null, // Include end title in the returned object
             startLocationCoordinates,  // include in the returned object
             endLocationCoordinates,    // include in the returned object
             durationHours: legDurationHours,
@@ -125,9 +129,11 @@ function computeJourneyDetails(result) {
         totalDurationHours,
         totalDurationMinutes,
         totalDistanceKilometers,
+        journeyDescription, // Include journey description in the returned object
         legs
     };
 
+    console.log('After the computing the journey details: '  + '\n' + journeyDetails);
     return journeyDetails;
 }
 
@@ -138,6 +144,10 @@ function displayJourneyDetails(journeyDetails) {
     // Clear out the current contents
     calculateDiv.innerHTML = '';
 
+    // Create elements to display journey description
+    let journeyDescriptionElement = document.createElement('p');
+    journeyDescriptionElement.textContent = journeyDetails.journeyDescription;
+
     // Create elements to display total duration and distance
     let totalDurationElement = document.createElement('p');
     totalDurationElement.textContent = 'Total Duration: ' + journeyDetails.totalDurationHours + ' hours ' + journeyDetails.totalDurationMinutes + ' minutes';
@@ -145,6 +155,7 @@ function displayJourneyDetails(journeyDetails) {
     totalDistanceElement.textContent = 'Total Distance: ' + journeyDetails.totalDistanceKilometers + ' kilometers';
 
     // Append these elements to the div
+    calculateDiv.appendChild(journeyDescriptionElement);
     calculateDiv.appendChild(totalDurationElement);
     calculateDiv.appendChild(totalDistanceElement);
 
@@ -152,14 +163,20 @@ function displayJourneyDetails(journeyDetails) {
     journeyDetails.legs.forEach(leg => {
         let legElement = document.createElement('div');
         let legTitle = document.createElement('h3');
+        let legStartEndTitle = document.createElement('p');
+        let legStartEndLocation = document.createElement('p');
         let legDuration = document.createElement('p');
         let legDistance = document.createElement('p');
 
-        legTitle.textContent = 'Leg ' + leg.legNumber + ': ' + leg.startLocation +'<br> to <br>' + ' to ' + '<br> to <br>' + leg.endLocation;
+        legTitle.textContent = 'Leg ' + leg.legNumber;
+        legStartEndTitle.textContent = leg.startTitle + ' to ' + leg.endTitle;
+        legStartEndLocation.textContent = leg.startLocation + ' to ' + leg.endLocation;
         legDuration.textContent = 'Duration: ' + leg.durationHours + ' hours ' + leg.durationMinutes + ' minutes';
         legDistance.textContent = 'Distance: ' + leg.distanceKilometers + ' kilometers';
 
         legElement.appendChild(legTitle);
+        legElement.appendChild(legStartEndTitle);
+        legElement.appendChild(legStartEndLocation);
         legElement.appendChild(legDuration);
         legElement.appendChild(legDistance);
 
@@ -169,6 +186,7 @@ function displayJourneyDetails(journeyDetails) {
     // Show the div
     calculateDiv.style.display = 'block';
 }
+
 
 function createUrlForGoogleMap(journeyDetails) {
     console.log("Creating the Url for Google Map!");
@@ -210,14 +228,14 @@ async function displayStops(stops) {
             globalCounter++;
             let geocodedAddress = await getGeocodedAddress(stop);
             let stopId = stop.replace(/ /g,'_') + '_' + Date.now();
-            stopsListContent += `<li draggable="true" ondragstart="drag(event)" id="${stopId}" data-stop-number="${globalCounter}" data-geocoded-address="${geocodedAddress}">${globalCounter}. ${stop}</li>`;
+            stopsListContent += `<li draggable="true" ondragstart="drag(event)" id="${stopId}" data-stop-number="${globalCounter}" data-geocoded-address="${geocodedAddress}" title="${title}">${globalCounter}. ${stop}</li>`;
         }
 
         stopsListContent += '</ul>';
         stopsList.innerHTML += stopsListContent;
     }
 
-    stopsList.style.display = stopsList.innerHTML ? 'block' : 'none';
+    stopsList.style.display = stopsList.innerHTML ? 'block' : 'none'; //display only when it has content
 }
 
 async function plotStopsOnMap() {
@@ -258,7 +276,7 @@ function getGeocodedAddress(stop) {
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-function addPointToBar(id, text, isOriginDestination = false, geocodedAddress) {
+function addPointToBar(id, text, isOriginDestination = false, geocodedAddress, title) {
     let spanElement = document.createElement('span');
     spanElement.setAttribute('class', 'journey-point');
     spanElement.setAttribute('id', id);
@@ -266,6 +284,7 @@ function addPointToBar(id, text, isOriginDestination = false, geocodedAddress) {
     spanElement.setAttribute('data-geocoded-address', geocodedAddress);  // Set the geocoded address
     spanElement.setAttribute("ondragstart", "drag(event)");  // fire the "drag" event
     spanElement.textContent = text;
+    spanElement.setAttribute('title', title);  // Set the title
     if (isOriginDestination) {
         spanElement.classList.add('origin-destination-point');
     } else {
@@ -299,8 +318,7 @@ function addPointToBar(id, text, isOriginDestination = false, geocodedAddress) {
 
 function drop(ev) {
     ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    console.log('Drop event data:', data);  // Add logging here
+    var data = ev.dataTransfer.getData("text"); //Name of the place
     var bar = document.getElementById("journey-bar");
     var target = ev.target;
     var draggedElement = document.getElementById(data);  // Get the dragged element
@@ -322,9 +340,12 @@ function drop(ev) {
 
         // Get the text of the dragged element, and not the id
         let text = draggedElement.textContent;
+        //Get the title
+        let title = draggedElement.getAttribute('title');
+        console.log('Dropped title: ' + title);
 
         // Pass the original ID of the dragged element (which includes the timestamp), the text, and the geocoded address to addPointToBar
-        addPointToBar(data, text, false, geocodedAddress);
+        addPointToBar(data, text, false, geocodedAddress, title);
     }
 }
 
@@ -354,23 +375,13 @@ function swapNodes(node1, node2) {
 
 
 
+///////////////////////////////////////////////////////////////////
+
+
     document.getElementById('journey-bar').addEventListener('drop', drop);
     document.getElementById('journey-bar').addEventListener('dragover', allowDrop);
 
     document.getElementById('send-button').addEventListener('click', handleButtonClick);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     var calculateButton = document.getElementById('calculate-button');
 
@@ -378,18 +389,47 @@ function swapNodes(node1, node2) {
 
 
 
-    function calculateRoute() {
-        var journeyPoints = Array.from(document.getElementById('journey-bar').children);
-        var route = journeyPoints.map(point => point.innerText);
-        console.log('Calculating the route with the following stops: ', route);
+function calculateRoute() {
+    var journeyPoints = Array.from(document.getElementById('journey-bar').children);
+    var route = journeyPoints.map(point => point.innerText);
+    console.log('Calculating the route with the following stops: ', route);
 
-        // Calculate the route with Google Maps API
-        let payload = createRouteWithStopPointsInOrder();
+    // Calculate the route with Google Maps API
+    let { payload, titles } = createRouteWithStopPointsInOrder();
 
-        routeDirection(payload, displayUrl = true);
-        //Display the save button after calculating the journey.
-        document.getElementById('save-button').style.display = 'block';
+    // Call the function to create journey description
+    journeyDescription = createJourneyDescription(titles);
+
+    // Pass only payload to routeDirection
+    routeDirection(payload, { titles }, displayUrl = true);
+    //Display the save button after calculating the journey.
+    document.getElementById('save-button').style.display = 'block';
+}
+
+// Function to create journey description
+function createJourneyDescription(titles) {
+    let description = '';
+
+    // Get the names of the origin and destination points
+    let origin = document.getElementById("origin").textContent;
+    let destination = document.getElementById("destination").textContent;
+
+    description += origin;
+
+    for (let i = 0; i < titles.length; i++) {
+        // Skip the title if it's the origin or destination
+        if (titles[i] !== "Origin" && titles[i] !== "Destination") {
+            description += ' to ' + titles[i];
+        }
     }
+
+    description += ' to ' + destination;
+
+    console.log('Created the journey description: ' + '\n' + description);
+    return description;
+}
+
+
 
     //Getting all the elements in the journey bar and use them in the order they are displayed to create a payload
     function createRouteWithStopPointsInOrder() {
@@ -400,23 +440,27 @@ function swapNodes(node1, node2) {
         waypoints: [],
         travelMode: 'DRIVING'
       };
+    let titles = [];
 
-      journeyPoints.forEach((point, index) => {
+    journeyPoints.forEach((point, index) => {
         let address = point.getAttribute('data-geocoded-address');
+        let title = point.getAttribute('title'); // get the title of the location
+        titles.push(title);
         if (index === 0) { // The first element is the origin
-          payload.origin = address;
+            payload.origin = address;
         } else if (index === journeyPoints.length - 1) { // The last element is the destination
-          payload.destination = address;
+            payload.destination = address;
         } else { // The other elements are waypoints
-          payload.waypoints.push({
-            location: address,
-            stopover: true
-          });
+            payload.waypoints.push({
+                location: address,
+                stopover: true
+            });
         }
-      });
+    });
 
-      return payload;
-    }
+    return { payload, titles };
+}
+
 
     //Buttons to display and save the route
     var saveButton = document.getElementById('save-button');

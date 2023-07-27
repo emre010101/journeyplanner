@@ -14,6 +14,8 @@ public class Leg {
     private Integer legNumber;
     private String startLocation;
     private String endLocation;
+    private String startTitle;
+    private String endTitle;
     private Coordinates startLocationCoordinates;
     private Coordinates endLocationCoordinates;
     private Double durationHours;
