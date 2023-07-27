@@ -6,6 +6,9 @@ let journeyDetails, createdMapImage, urlToGoGMap;
 let journeyDescription = '';
 //For labelling the Stop Points
 let globalCounter = 0;
+// declare global variables for origin and destination
+let globalGeocodedOrigin, globalGeocodedDestination;
+let globalOriginName, globalDestinationName;
 
 async function handleButtonClick() {
     console.log("Handling the user click");
@@ -52,12 +55,16 @@ async function processText(data) {
     }
 
     //Getting the geocoded address of origin and destination
-    const geocodedOrigin = await getGeocodedAddress(data.origin);
-    const geocodedDestination = await getGeocodedAddress(data.destination);
+    globalGeocodedOrigin = await getGeocodedAddress(data.origin);
+    globalGeocodedDestination = await getGeocodedAddress(data.destination);
+
+    //Store the names
+    globalOriginName = data.origin;
+    globalDestinationName = data.destination;
 
     //Adding them to bar
-    addPointToBar('destination', data.destination, true, geocodedDestination, 'Destination');
-    addPointToBar('origin', data.origin, true, geocodedOrigin, 'Origin');
+    addPointToBar('destination', globalDestinationName, true, globalGeocodedDestination, 'Destination');
+    addPointToBar('origin', globalOriginName, true, globalGeocodedOrigin, 'Origin');
 }
 
 function routeDirection(payload, { titles = [] } = {}, displayUrl = false) {
@@ -480,6 +487,17 @@ async function sentJourneyToServer() {
 
     // get the journey title entered by the user
     var journeyTitle = document.getElementById('title').value;
+
+    // include geocoded origin and destination in journeyDetails
+    journeyDetails.originLocation = {
+        name: globalOriginName,
+        geocodedAddress: globalGeocodedOrigin
+    };
+    journeyDetails.destinationLocation = {
+        name: globalDestinationName,
+        geocodedAddress: globalGeocodedDestination
+    };
+
 
     // gather all data to send to server
     var dataToSend = {
