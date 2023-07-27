@@ -1,6 +1,7 @@
 package com.planner.journeyplanner.journey;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.planner.journeyplanner.location.Location;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +55,11 @@ public class Journey {
     @Column(name = "photo_url", length = 2048)
     private String photoUrl;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "origin_id", referencedColumnName = "id")
+    private Location origin;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "destination_id", referencedColumnName = "id")
+    private Location destination;
 }

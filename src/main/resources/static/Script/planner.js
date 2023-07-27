@@ -488,23 +488,24 @@ async function sentJourneyToServer() {
     // get the journey title entered by the user
     var journeyTitle = document.getElementById('title').value;
 
-    // include geocoded origin and destination in journeyDetails
-    journeyDetails.originLocation = {
+    // define origin and destination locations
+    var originLocation = {
         name: globalOriginName,
         geocodedAddress: globalGeocodedOrigin
     };
-    journeyDetails.destinationLocation = {
+    var destinationLocation = {
         name: globalDestinationName,
         geocodedAddress: globalGeocodedDestination
     };
-
 
     // gather all data to send to server
     var dataToSend = {
         staticMapUrl: staticMapUrl,
         journeyDetails: journeyDetails,
         journeyTitle: journeyTitle,
-        urlToGoGMap: urlToGoGMap
+        urlToGoGMap: urlToGoGMap,
+        originLocation: originLocation,
+        destinationLocation: destinationLocation
     };
 
     try {

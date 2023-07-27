@@ -1,5 +1,8 @@
 package com.planner.journeyplanner.journey;
 
+import com.planner.journeyplanner.exception.ResourceNotFoundException;
+import com.planner.journeyplanner.location.Location;
+import com.planner.journeyplanner.location.LocationService;
 import com.planner.journeyplanner.user.User;
 import com.planner.journeyplanner.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,8 @@ public class JourneyService {
 
     private final JourneyRepository journeyRepository;
     private final UserRepository userRepository;
+    private final LocationService locationService;
+
 
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,6 +41,21 @@ public class JourneyService {
     public Journey save(Journey journey) {
         User authenticatedUser = getAuthenticatedUser();
         journey.setUser(authenticatedUser);
+        // Create Location entities for origin and destination
+        // Use LocationService to create Location entities
+        Location origin = locationService.createLocation(
+                journey.getOrigin().getName(),
+                journey.getOrigin().getGeocodedAddress()
+        );
+        Location destination = locationService.createLocation(
+                journey.getDestination().getName(),
+                journey.getDestination().getGeocodedAddress()
+        );
+
+        // Associate Locations with Journey
+        journey.setOrigin(origin);
+        journey.setDestination(destination);
+
         return journeyRepository.save(journey);
     }
 
@@ -45,6 +65,12 @@ public class JourneyService {
 
     public Optional<Journey> findById(Integer id) {
         return journeyRepository.findById(id);
+    }
+
+    public List<Journey> findByOriginAndDestination(String originName, String destinationName) throws ResourceNotFoundException {
+        Location origin = locationService.findByName(originName);
+        Location destination = locationService.findByName(destinationName);
+        return journeyRepository.findByOriginAndDestination(origin, destination);
     }
 
     // add additional methods as needed
