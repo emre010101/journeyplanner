@@ -43,17 +43,16 @@ public class Journey {
     @JdbcTypeCode(SqlTypes.JSON)
     private JourneyDetails journeyDetails;
 
+    // additional fields for future use
+    @Column(name = "description")
+    private String description;
+    @Column(name = "photo_url", length = 2048)
+    private String photoUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-
-    // additional fields for future use
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "photo_url", length = 2048)
-    private String photoUrl;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "origin_id", referencedColumnName = "id")

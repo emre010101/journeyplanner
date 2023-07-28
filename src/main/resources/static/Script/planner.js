@@ -504,8 +504,8 @@ async function sentJourneyToServer() {
         journeyDetails: journeyDetails,
         journeyTitle: journeyTitle,
         urlToGoGMap: urlToGoGMap,
-        originLocation: originLocation,
-        destinationLocation: destinationLocation
+        origin: originLocation,
+        destination: destinationLocation
     };
 
     try {

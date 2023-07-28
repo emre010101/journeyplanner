@@ -239,6 +239,8 @@ function setPageState(loggedInUser, elements) {
 
     var logOutButton = document.getElementById('log-out');
     var userGreeting = document.getElementById('user-greeting');
+    var plannerLink = document.getElementById('plannerLink');
+    var communityLink = document.getElementById('communityLink');
 
     if (!elements.signInButton || !elements.logInButton || !logOutButton || !userGreeting) {
         console.error('One or more elements are missing.');
@@ -249,6 +251,8 @@ function setPageState(loggedInUser, elements) {
         elements.signInButton.style.display = 'none';
         elements.logInButton.style.display = 'none';
         logOutButton.style.display = 'inline-block';
+        plannerLink.style.display = 'inline-block';
+        communityLink.style.display = 'inline-block';
         userGreeting.textContent = 'Welcome, ' + loggedInUser;
     } else {
         logOutButton.style.display = 'none';
