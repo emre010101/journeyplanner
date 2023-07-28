@@ -31,7 +31,7 @@ public class JourneyController {
     }
 
     @GetMapping("/journeys")
-    public ResponseEntity<Page<JourneyDTO>> getJourneys(
+    public ResponseEntity<Page<JourneyDTODeprecated>> getJourneys(
             @RequestParam(required = false) String userEmail,
             @RequestParam(defaultValue = "dateCreated") String sortBy,
             @RequestParam(defaultValue = "desc") String direction,
@@ -43,7 +43,7 @@ public class JourneyController {
 
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
-        Page<JourneyDTO> journeyPage = journeyService.getJourneys(Optional.ofNullable(userEmail),
+        Page<JourneyDTODeprecated> journeyPage = journeyService.getJourneys(Optional.ofNullable(userEmail),
                 Optional.ofNullable(sortBy),
                 Optional.ofNullable(direction),
                 Optional.ofNullable(origin),
@@ -65,6 +65,33 @@ public class JourneyController {
 
         return ResponseEntity.ok(journeyPage);
     }
+
+    @GetMapping("/journeys-basic-with-likes")
+    public ResponseEntity<Page<BasicJourneyDTO>> getBasicJourneysWithLikes(
+            @RequestParam(defaultValue = "dateCreated") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
+        Page<BasicJourneyDTO> journeyPage = journeyService.getJourneysWithLikesCount(pageable);
+
+        return ResponseEntity.ok(journeyPage);
+    }
+
+    @GetMapping("/journeys-with-likes-comments")
+    public ResponseEntity<Page<JourneyDTO>> getJourneysWithLikesAndComments(
+            @RequestParam(defaultValue = "dateCreated") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
+        Page<JourneyDTO> journeyPage = journeyService.getJourneysWithLikesAndComments(pageable);
+
+        return ResponseEntity.ok(journeyPage);
+    }
+
 
 
 }

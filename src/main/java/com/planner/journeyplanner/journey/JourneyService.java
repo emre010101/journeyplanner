@@ -10,11 +10,14 @@ import com.planner.journeyplanner.location.LocationService;
 import com.planner.journeyplanner.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class JourneyService {
@@ -55,10 +58,6 @@ public class JourneyService {
         return journeyRepository.findById(id);
     }
 
-   /* public List<Journey> findByUserEmail(String userEmail){
-        User user = userRepository.findByEmail(userEmail).orElseThrow();
-        return journeyRepository.findByUser(user);
-    }*/
 
     public List<Journey> findByOriginAndDestination(String originName, String destinationName) throws ResourceNotFoundException {
         Location origin = locationService.findByName(originName);
@@ -66,12 +65,12 @@ public class JourneyService {
         return journeyRepository.findByOriginAndDestination(origin, destination);
     }
 
-    public Page<JourneyDTO> getJourneys(Optional<String> userEmail,
-                                        Optional<String> sortBy,
-                                        Optional<String> direction,
-                                        Optional<String> origin,
-                                        Optional<String> destination,
-                                        Pageable pageable) {
+    public Page<JourneyDTODeprecated> getJourneys(Optional<String> userEmail,
+                                                  Optional<String> sortBy,
+                                                  Optional<String> direction,
+                                                  Optional<String> origin,
+                                                  Optional<String> destination,
+                                                  Pageable pageable) {
 
         Page<Journey> journeys;
 
@@ -90,16 +89,45 @@ public class JourneyService {
         return journeys.map(this::convertToDto);
     }
 
-
-    private JourneyDTO convertToDto(Journey journey) {
+    private JourneyDTODeprecated convertToDto(Journey journey) {
         Long likesCount = likeService.getLikesCountForJourney(journey.getId());
         List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
 
-        return new JourneyDTO(journey, likesCount, comments, (long) comments.size());
+        return new JourneyDTODeprecated(journey, likesCount, comments, (long) comments.size());
     }
 
     public Page<Journey> getBasicJourneys(Pageable pageable) {
         return journeyRepository.findAll(pageable);
+    }
+
+    public Page<BasicJourneyDTO> getJourneysWithLikesCount(Pageable pageable) {
+        Page<Journey> journeys = journeyRepository.findAll(pageable);
+
+        // Use a method to convert each Journey to a BasicJourneyDTO
+        List<BasicJourneyDTO> dtos = journeys.stream()
+                .map(journey -> {
+                    Long likesCount = likeService.getLikesCountForJourney(journey.getId());
+                    return new BasicJourneyDTO(journey, likesCount);
+                })
+                .collect(Collectors.toList());
+
+        // Convert the List<BasicJourneyDTO> back to a Page<BasicJourneyDTO> for consistency
+        return new PageImpl<>(dtos, pageable, dtos.size());
+    }
+
+    public Page<JourneyDTO> getJourneysWithLikesAndComments(Pageable pageable) {
+        Page<Journey> journeys = journeyRepository.findAll(pageable);
+
+        List<JourneyDTO> dtos = journeys.stream()
+                .map(journey -> {
+                    Long likesCount = likeService.getLikesCountForJourney(journey.getId());
+                    List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
+                    Long commentsCount = (long) comments.size();
+                    return new JourneyDTO(journey, likesCount, comments, commentsCount);
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
 

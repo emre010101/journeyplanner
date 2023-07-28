@@ -1,16 +1,17 @@
 package com.planner.journeyplanner.journey;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.planner.journeyplanner.comment.Comment;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BasicJourneyDTO {
+public class JourneyDTODeprecated {
+    //The attributes from Journey
     private Long id;
     private String journeyTitle;
     private String staticMapUrl;
@@ -19,9 +20,16 @@ public class BasicJourneyDTO {
     private LocalDateTime dateCreated;
     private String description;
     private Long userId;
+    ////////////////
     private Long likesCount;
+    private List<Comment> comments;
+    private Long commentsCount;
 
-    public BasicJourneyDTO(Journey journey, Long likesCount){
+    public JourneyDTODeprecated(Journey journey, Long likesCount, List<Comment> comments, Long commentsCount){
+        this.likesCount = likesCount;
+        this.comments = comments;
+        this.commentsCount = commentsCount;
+
         this.id = journey.getId();
         this.journeyTitle = journey.getJourneyTitle();
         this.staticMapUrl = journey.getStaticMapUrl();
@@ -30,6 +38,6 @@ public class BasicJourneyDTO {
         this.dateCreated = journey.getDateCreated();
         this.description = journey.getDescription();
         this.userId = journey.getUser().getId();
-        this.likesCount = likesCount;
     }
+
 }

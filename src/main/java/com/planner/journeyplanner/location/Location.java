@@ -20,5 +20,5 @@ public class Location {
     private Long id;
     private String name;
     private String geocodedAddress;
-
+    private Integer count = 1;
 }

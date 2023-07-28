@@ -1,43 +1,24 @@
 package com.planner.journeyplanner.journey;
 
-import com.planner.journeyplanner.comment.Comment;
-import lombok.*;
 
-import java.time.LocalDateTime;
+import com.planner.journeyplanner.comment.Comment;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JourneyDTO {
-    //The attributes from Journey
-    private Long id;
-    private String journeyTitle;
-    private String staticMapUrl;
-    private String urlToGoGMap;
-    private JourneyDetails journeyDetails;
-    private LocalDateTime dateCreated;
-    private String description;
-    private Long userId;
-    ////////////////
-    private Long likesCount;
+public class JourneyDTO extends BasicJourneyDTO {
     private List<Comment> comments;
     private Long commentsCount;
 
     public JourneyDTO(Journey journey, Long likesCount, List<Comment> comments, Long commentsCount){
-        this.likesCount = likesCount;
+        super(journey, likesCount);
         this.comments = comments;
         this.commentsCount = commentsCount;
-
-        this.id = journey.getId();
-        this.journeyTitle = journey.getJourneyTitle();
-        this.staticMapUrl = journey.getStaticMapUrl();
-        this.urlToGoGMap = journey.getUrlToGoGMap();
-        this.journeyDetails = journey.getJourneyDetails();
-        this.dateCreated = journey.getDateCreated();
-        this.description = journey.getDescription();
-        this.userId = journey.getUser().getId();
     }
-
 }
