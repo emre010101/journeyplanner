@@ -28,7 +28,7 @@ public class Journey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column(name = "journey_title")
     private String journeyTitle;

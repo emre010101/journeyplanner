@@ -14,10 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /*
 * AuthenticationService.class
@@ -70,6 +75,20 @@ public class AuthenticationService {
                 .refreshToken(refreshToken)
                 .build();
     }
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // Fetch the user from the database using the email/username (assuming you have a findByEmail method in your UserRepository).
+        Optional<User> userOptional = repository.findByEmail(userDetails.getUsername());
+
+        if (!userOptional.isPresent()) {
+            // Throw an exception or handle this case as you see fit
+            throw new UsernameNotFoundException("User not found with username: " + userDetails.getUsername());
+        }
+
+        return userOptional.get();
+    }
 
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
@@ -83,7 +102,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(Math.toIntExact(user.getId()));
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {

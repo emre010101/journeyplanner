@@ -1,11 +1,17 @@
 package com.planner.journeyplanner.journey;
 
+import com.planner.journeyplanner.auth.AuthenticationService;
+import com.planner.journeyplanner.comment.Comment;
+import com.planner.journeyplanner.comment.CommentService;
 import com.planner.journeyplanner.exception.ResourceNotFoundException;
+import com.planner.journeyplanner.like.LikeService;
 import com.planner.journeyplanner.location.Location;
 import com.planner.journeyplanner.location.LocationService;
 import com.planner.journeyplanner.user.User;
 import com.planner.journeyplanner.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,27 +25,14 @@ import java.util.Optional;
 public class JourneyService {
 
     private final JourneyRepository journeyRepository;
-    private final UserRepository userRepository;
     private final LocationService locationService;
+    private final LikeService likeService;
+    private final CommentService commentService;
+    private final AuthenticationService authenticationService;
 
-
-    public User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // Fetch the user from the database using the email/username (assuming you have a findByEmail method in your UserRepository).
-        Optional<User> userOptional = userRepository.findByEmail(userDetails.getUsername());
-
-        if (!userOptional.isPresent()) {
-            // Throw an exception or handle this case as you see fit
-            throw new UsernameNotFoundException("User not found with username: " + userDetails.getUsername());
-        }
-
-        return userOptional.get();
-    }
 
     public Journey save(Journey journey) {
-        User authenticatedUser = getAuthenticatedUser();
+        User authenticatedUser = authenticationService.getAuthenticatedUser();
         journey.setUser(authenticatedUser);
         // Create Location entities for origin and destination
         // Use LocationService to create Location entities
@@ -63,9 +56,14 @@ public class JourneyService {
         return journeyRepository.findAll();
     }
 
-    public Optional<Journey> findById(Integer id) {
+    public Optional<Journey> findById(Long id) {
         return journeyRepository.findById(id);
     }
+
+   /* public List<Journey> findByUserEmail(String userEmail){
+        User user = userRepository.findByEmail(userEmail).orElseThrow();
+        return journeyRepository.findByUser(user);
+    }*/
 
     public List<Journey> findByOriginAndDestination(String originName, String destinationName) throws ResourceNotFoundException {
         Location origin = locationService.findByName(originName);
@@ -73,5 +71,32 @@ public class JourneyService {
         return journeyRepository.findByOriginAndDestination(origin, destination);
     }
 
-    // add additional methods as needed
+    public Page<JourneyDTO> getJourneys(Optional<String> userEmail,
+                                        Optional<String> sortBy,
+                                        Optional<String> direction,
+                                        Optional<String> origin,
+                                        Optional<String> destination,
+                                        Pageable pageable) {
+
+        Page<Journey> journeys;
+
+        if(userEmail.isPresent()){
+            journeys = journeyRepository.findByUserEmail(userEmail.get(), pageable);
+        } else if(origin.isPresent() && destination.isPresent()){
+            journeys = journeyRepository.findByOriginAndDestination(origin.get(), destination.get(), pageable);
+        } else {
+            journeys = journeyRepository.findAll(pageable);
+        }
+
+        return journeys.map(this::convertToDto);
+    }
+
+    private JourneyDTO convertToDto(Journey journey) {
+        Long likesCount = likeService.getLikesCountForJourney(journey.getId());
+        List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
+
+        return new JourneyDTO(journey, likesCount, comments);
+    }
+
+    // add additional methods
 }
