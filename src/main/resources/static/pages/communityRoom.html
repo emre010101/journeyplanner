@@ -11,29 +11,29 @@
 <nav id="nav-bar">
 </nav>
 
-<div class="journey-container">
-    <div class="journey-row">
-        <h2 id="journey-title">Journey Title</h2>
-        <p id="journey-user">User email</p>
-        <p id="journey-date">Created Date</p>
-        <p id="journey-details">Journey Details</p>
-        <details>
-            <summary>View More Details</summary>
-            <p id="journey-legs">Journey Legs Details</p>
-        </details>
-        <img src="" alt="journey image" id="journey-image">
-        <div class="journey-actions">
-            <div class="likes">
-                <span id="like-count">0</span> Likes
-                <button>Like</button>
-            </div>
-            <details>
-                <summary>Comments</summary>
-                <div id="comments-section"></div>
-                <button>Comment</button>
-            </details>
-        </div>
-    </div>
+<div id="filter-bar">
+    <input type="checkbox" id="my-journey" name="my-journey">
+    <label for="my-journey">My Journeys</label>
+
+    <input type="text" id="origin" placeholder="Origin">
+    <input type="text" id="destination" placeholder="Destination">
+
+    <select id="sort-direction">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+
+    <select id="page-size">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+    </select>
+
+    <button id="search-btn">Search</button>
+</div>
+
+<div id="journeys-container">
+    <!-- Journeys will be added here -->
 </div>
 
 
@@ -49,6 +49,7 @@
 
 
 <script src="../Script/navbar.js"></script>
+<script src="../Script/community.js"></script>
 
 </body>
 </html>

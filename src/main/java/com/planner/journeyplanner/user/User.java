@@ -1,5 +1,6 @@
 package com.planner.journeyplanner.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.planner.journeyplanner.journey.Journey;
 import com.planner.journeyplanner.token.Token;
 import jakarta.persistence.*;
@@ -45,6 +46,7 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Journey> journeys;
 
     @Override

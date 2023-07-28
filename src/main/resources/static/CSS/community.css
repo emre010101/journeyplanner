@@ -54,3 +54,23 @@
 .journey-row .journey-actions button:hover {
   background-color: #0069D9;
 }
+
+
+
+
+
+#filter-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#filter-bar input[type="text"] {
+    width: 200px;
+}
+
+#journeys-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}

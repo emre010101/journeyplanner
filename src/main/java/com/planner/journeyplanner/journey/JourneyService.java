@@ -8,14 +8,9 @@ import com.planner.journeyplanner.like.LikeService;
 import com.planner.journeyplanner.location.Location;
 import com.planner.journeyplanner.location.LocationService;
 import com.planner.journeyplanner.user.User;
-import com.planner.journeyplanner.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,6 +79,10 @@ public class JourneyService {
             journeys = journeyRepository.findByUserEmail(userEmail.get(), pageable);
         } else if(origin.isPresent() && destination.isPresent()){
             journeys = journeyRepository.findByOriginAndDestination(origin.get(), destination.get(), pageable);
+        } else if(origin.isPresent()) {
+            journeys = journeyRepository.findByOrigin(origin.get(), pageable);
+        } else if(destination.isPresent()) {
+            journeys = journeyRepository.findByDestination(destination.get(), pageable);
         } else {
             journeys = journeyRepository.findAll(pageable);
         }
@@ -91,12 +90,18 @@ public class JourneyService {
         return journeys.map(this::convertToDto);
     }
 
+
     private JourneyDTO convertToDto(Journey journey) {
         Long likesCount = likeService.getLikesCountForJourney(journey.getId());
         List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
 
-        return new JourneyDTO(journey, likesCount, comments);
+        return new JourneyDTO(journey, likesCount, comments, (long) comments.size());
     }
+
+    public Page<Journey> getBasicJourneys(Pageable pageable) {
+        return journeyRepository.findAll(pageable);
+    }
+
 
     // add additional methods
 }

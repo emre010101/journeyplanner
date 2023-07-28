@@ -19,6 +19,10 @@ public interface JourneyRepository extends JpaRepository<Journey, Long> {
 
     Page<Journey> findByOriginAndDestination(String origin, String destination, Pageable pageable);
 
+    Page<Journey> findByOrigin(String origin, Pageable pageable);
+
+    Page<Journey> findByDestination(String destination, Pageable pageable);
+
 
     // additional query methods go here
 }

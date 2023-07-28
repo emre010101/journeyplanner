@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/jp/journey")
@@ -23,13 +21,13 @@ public class JourneyController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<Journey> journey(
+    public ResponseEntity<Void> journey(
             @RequestBody Journey journey
     ) {
         System.out.println("Received Journey: " + journey.toString());
 
         Journey savedJourney = journeyService.save(journey);
-        return new ResponseEntity<>(savedJourney, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/journeys")
@@ -41,6 +39,8 @@ public class JourneyController {
             @RequestParam(required = false) String destination,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        System.out.println("Journey are asked from the server");
+
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
         Page<JourneyDTO> journeyPage = journeyService.getJourneys(Optional.ofNullable(userEmail),
@@ -53,7 +53,18 @@ public class JourneyController {
         return ResponseEntity.ok(journeyPage);
     }
 
+    @GetMapping("/journeys-basic")
+    public ResponseEntity<Page<Journey>> getBasicJourneys(
+            @RequestParam(defaultValue = "dateCreated") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
 
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
+        Page<Journey> journeyPage = journeyService.getBasicJourneys(pageable);
+
+        return ResponseEntity.ok(journeyPage);
+    }
 
 
 }
