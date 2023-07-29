@@ -18,8 +18,8 @@ public class JourneyDTODeprecated {
     private String urlToGoGMap;
     private JourneyDetails journeyDetails;
     private LocalDateTime dateCreated;
+    private Integer userId;
     private String description;
-    private Long userId;
     ////////////////
     private Long likesCount;
     private List<Comment> comments;

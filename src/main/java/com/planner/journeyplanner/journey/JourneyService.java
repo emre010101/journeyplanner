@@ -122,8 +122,8 @@ public class JourneyService {
                 .map(journey -> {
                     Long likesCount = likeService.getLikesCountForJourney(journey.getId());
                     List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
-                    Long commentsCount = (long) comments.size();
-                    return new JourneyDTO(journey, likesCount, comments, commentsCount);
+                    Long commentsCount =  (long)comments.size(); //(long) comments.size();
+                    return new JourneyDTO(journey, likesCount, commentsCount, comments);
                 })
                 .collect(Collectors.toList());
 

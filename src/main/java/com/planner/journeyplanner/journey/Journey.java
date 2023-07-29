@@ -2,6 +2,8 @@ package com.planner.journeyplanner.journey;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planner.journeyplanner.comment.Comment;
 import com.planner.journeyplanner.location.Location;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 /*
 * date: 23/07/2023
 * author: Emre Kavak
@@ -46,7 +49,6 @@ public class Journey {
     @JdbcTypeCode(SqlTypes.JSON)
     private JourneyDetails journeyDetails;
 
-
     @Column(name = "created_at")
     private LocalDateTime dateCreated;
 
@@ -58,8 +60,12 @@ public class Journey {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference(value="user-journey")
     private User user;
+
+    @OneToMany(mappedBy = "journey")
+    @JsonManagedReference(value="journey-comment")
+    private List<Comment> comments;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "origin_id", referencedColumnName = "id")

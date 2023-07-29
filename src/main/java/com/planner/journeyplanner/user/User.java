@@ -1,6 +1,7 @@
 package com.planner.journeyplanner.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planner.journeyplanner.comment.Comment;
 import com.planner.journeyplanner.journey.Journey;
 import com.planner.journeyplanner.token.Token;
 import jakarta.persistence.*;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue //default value is auto
-    private Long id;
+    private int id;
 
     //@Column(nullable = false, unique = true)
     private String email;
@@ -46,8 +47,12 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference(value="user-journey")
     private List<Journey> journeys;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference(value="user-comment")
+    private List<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

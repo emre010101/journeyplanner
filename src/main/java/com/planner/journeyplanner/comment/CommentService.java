@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,16 +25,19 @@ public class CommentService {
         return commentRepository.findByJourneyId(journeyId);
     }
 
+    //public Long getCommentsCountByJourneyId(Long journeyId){return commentRepository.}
+
     public Comment createComment(Long journeyId, String content) throws ResourceNotFoundException {
         User user = authenticationService.getAuthenticatedUser();
         Journey journey = journeyRepository.findById(journeyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Journey with id " + journeyId + " not found"));
 
-        Comment comment = new Comment();
-        comment.setContent(content);
-        comment.setJourney(journey);
-        comment.setUser(user);
-
+        Comment comment = Comment
+                .builder()
+                        .content(content)
+                                .journey(journey)
+                                        .user(user)
+                                                .build();
         return commentRepository.save(comment);
     }
 
@@ -42,11 +46,16 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment with id " + id + " not found"));
 
-        if (!comment.getUser().getId().equals(user.getId())) {
+        if (!Objects.equals(comment.getUser().getId(), user.getId())) {
             throw new UnauthorizedAccessException("User is not authorized to delete this comment");
         }
 
         commentRepository.delete(comment);
+    }
+
+
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
     }
 
 

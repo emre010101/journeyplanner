@@ -18,7 +18,7 @@ public class BasicJourneyDTO {
     private JourneyDetails journeyDetails;
     private LocalDateTime dateCreated;
     private String description;
-    private Long userId;
+    private Integer userId;
     private Long likesCount;
 
     public BasicJourneyDTO(Journey journey, Long likesCount){
