@@ -27,20 +27,22 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue //default value is auto
-    private int id;
+    private Long id;
 
-    //@Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    //@Column(name = "full_name", nullable = false)
+    @Column(name = "firstname", nullable = false)
     private String firstname;
 
+    @Column(name = "lastname", nullable = false)
     private String lastname;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(5) default 'USER'")
     private Role role;
 
     @OneToMany(mappedBy = "user")

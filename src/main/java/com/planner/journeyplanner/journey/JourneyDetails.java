@@ -18,5 +18,4 @@ public class JourneyDetails {
     private Double totalDistanceKilometers;
     private List<Leg> legs;
 
-
 }

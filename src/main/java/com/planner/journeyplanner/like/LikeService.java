@@ -7,6 +7,7 @@ import com.planner.journeyplanner.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,4 +41,7 @@ public class LikeService {
     }
 
 
+    public List<Like> getLikesByJourney(Long journeyId) {
+        return likeRepository.findAllByJourneyId(journeyId);
+    }
 }

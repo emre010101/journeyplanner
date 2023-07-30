@@ -59,4 +59,17 @@ public class CommentService {
     }
 
 
+    public Comment updateComment(Long id, String content) throws ResourceNotFoundException {
+        Optional<Comment> comment = commentRepository.findById(id);
+
+        if(!comment.isPresent()) {
+            throw new ResourceNotFoundException("The comment is now exist!");
+        }
+
+        Comment existingComment = comment.get();
+
+        existingComment.setContent(content);
+
+        return commentRepository.save(existingComment);
+    }
 }

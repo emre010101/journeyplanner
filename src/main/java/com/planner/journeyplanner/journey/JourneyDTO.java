@@ -2,6 +2,9 @@ package com.planner.journeyplanner.journey;
 
 
 import com.planner.journeyplanner.comment.Comment;
+import com.planner.journeyplanner.comment.CommentDTO;
+import com.planner.journeyplanner.like.LikeDTO;
+import com.planner.journeyplanner.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class JourneyDTO {
     private Long id;
     private String journeyTitle;
@@ -21,14 +25,14 @@ public class JourneyDTO {
     private JourneyDetails journeyDetails;
     private LocalDateTime dateCreated;
     private String description;
-    private String firstName;
-    private String lastName;
-    private Integer userId;
+    private UserDTO userDTO;
+    private List<LikeDTO> likeDTO;
     private Long likesCount;
-    private List<Comment> comments;
+    private List<CommentDTO> comments;
     private Long commentsCount;
+    private boolean isUserJourney;
 
-    public JourneyDTO(Journey journey, Long likesCount, Long commentsCount, List<Comment> comments){
+    public JourneyDTO(Journey journey, List<LikeDTO> likeDTO, Long likesCount, List<CommentDTO> comments, Long commentsCount, Long userId) {
         this.id = journey.getId();
         this.journeyTitle = journey.getJourneyTitle();
         this.staticMapUrl = journey.getStaticMapUrl();
@@ -36,11 +40,11 @@ public class JourneyDTO {
         this.journeyDetails = journey.getJourneyDetails();
         this.dateCreated = journey.getDateCreated();
         this.description = journey.getDescription();
-        this.firstName = journey.getUser().getFirstname();
-        this.lastName = journey.getUser().getLastname();
-        this.userId = journey.getUser().getId();
+        this.userDTO = new UserDTO(journey.getUser());
+        this.likeDTO = likeDTO;
         this.likesCount = likesCount;
         this.comments = comments;
         this.commentsCount = commentsCount;
+        isUserJourney = journey.getUser().getId() == userId;
     }
 }

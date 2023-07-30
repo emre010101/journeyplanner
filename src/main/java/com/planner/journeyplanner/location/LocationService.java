@@ -12,7 +12,6 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-
     public Location updateLocation(Location location) {
         location.setCount(location.getCount() + 1);
         return locationRepository.save(location);
@@ -24,9 +23,11 @@ public class LocationService {
         if (existingLocationOpt.isPresent()) {
             return updateLocation(existingLocationOpt.get());
         } else {
-            Location location = new Location();
-            location.setName(name);
-            location.setGeocodedAddress(geocodedAddress);
+            Location location = Location
+                    .builder()
+                            .name(name)
+                                    .geocodedAddress(geocodedAddress)
+                                            .build();
             return locationRepository.save(location);
         }
     }

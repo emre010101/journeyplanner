@@ -52,6 +52,9 @@ public class Journey {
     @Column(name = "created_at")
     private LocalDateTime dateCreated;
 
+    @Column(name = "updated_at")
+    private LocalDateTime dateUpdated;
+
     // additional fields for future use
     @Column(name = "description")
     private String description;
@@ -74,4 +77,11 @@ public class Journey {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "destination_id", referencedColumnName = "id")
     private Location destination;
+
+    @PrePersist
+    protected void onCreate() { dateCreated = LocalDateTime.now(); }
+    @PreUpdate
+    protected void onUpdate() {
+        dateUpdated = LocalDateTime.now();
+    }
 }

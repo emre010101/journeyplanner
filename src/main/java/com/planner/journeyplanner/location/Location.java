@@ -20,5 +20,6 @@ public class Location {
     private Long id;
     private String name;
     private String geocodedAddress;
+    @Builder.Default // to let know builder pattern what will be default
     private Integer count = 1;
 }

@@ -2,8 +2,11 @@ package com.planner.journeyplanner.journey;
 
 import com.planner.journeyplanner.auth.AuthenticationService;
 import com.planner.journeyplanner.comment.Comment;
+import com.planner.journeyplanner.comment.CommentDTO;
 import com.planner.journeyplanner.comment.CommentService;
 import com.planner.journeyplanner.exception.ResourceNotFoundException;
+import com.planner.journeyplanner.like.Like;
+import com.planner.journeyplanner.like.LikeDTO;
 import com.planner.journeyplanner.like.LikeService;
 import com.planner.journeyplanner.location.Location;
 import com.planner.journeyplanner.location.LocationService;
@@ -65,71 +68,36 @@ public class JourneyService {
         return journeyRepository.findByOriginAndDestination(origin, destination);
     }
 
-    public Page<JourneyDTODeprecated> getJourneys(Optional<String> userEmail,
-                                                  Optional<String> sortBy,
-                                                  Optional<String> direction,
-                                                  Optional<String> origin,
-                                                  Optional<String> destination,
-                                                  Pageable pageable) {
 
-        Page<Journey> journeys;
 
-        if(userEmail.isPresent()){
-            journeys = journeyRepository.findByUserEmail(userEmail.get(), pageable);
-        } else if(origin.isPresent() && destination.isPresent()){
-            journeys = journeyRepository.findByOriginAndDestination(origin.get(), destination.get(), pageable);
-        } else if(origin.isPresent()) {
-            journeys = journeyRepository.findByOrigin(origin.get(), pageable);
-        } else if(destination.isPresent()) {
-            journeys = journeyRepository.findByDestination(destination.get(), pageable);
-        } else {
-            journeys = journeyRepository.findAll(pageable);
-        }
-
-        return journeys.map(this::convertToDto);
-    }
-
-    private JourneyDTODeprecated convertToDto(Journey journey) {
-        Long likesCount = likeService.getLikesCountForJourney(journey.getId());
-        List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
-
-        return new JourneyDTODeprecated(journey, likesCount, comments, (long) comments.size());
-    }
-
-    public Page<Journey> getBasicJourneys(Pageable pageable) {
-        return journeyRepository.findAll(pageable);
-    }
-
-    public Page<BasicJourneyDTO> getJourneysWithLikesCount(Pageable pageable) {
+    public Page<JourneyDTO> getJourneys(Pageable pageable, String origin, String destination) {
         Page<Journey> journeys = journeyRepository.findAll(pageable);
-
-        // Use a method to convert each Journey to a BasicJourneyDTO
-        List<BasicJourneyDTO> dtos = journeys.stream()
-                .map(journey -> {
-                    Long likesCount = likeService.getLikesCountForJourney(journey.getId());
-                    return new BasicJourneyDTO(journey, likesCount);
-                })
-                .collect(Collectors.toList());
-
-        // Convert the List<BasicJourneyDTO> back to a Page<BasicJourneyDTO> for consistency
-        return new PageImpl<>(dtos, pageable, dtos.size());
-    }
-
-    public Page<JourneyDTO> getJourneysWithLikesAndComments(Pageable pageable) {
-        Page<Journey> journeys = journeyRepository.findAll(pageable);
+        Long userId = authenticationService.getAuthenticatedUser().getId();
 
         List<JourneyDTO> dtos = journeys.stream()
                 .map(journey -> {
-                    Long likesCount = likeService.getLikesCountForJourney(journey.getId());
+                    // Get likes for the journey
+                    List<Like> likes = likeService.getLikesByJourney(journey.getId());
+                    // Convert to LikeDTO
+                    List<LikeDTO> likeDTOs = likes.stream()
+                            .map(like -> new LikeDTO(like, userId))
+                            .collect(Collectors.toList());
+                    // Get comments for the journey
                     List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
-                    Long commentsCount =  (long)comments.size(); //(long) comments.size();
-                    return new JourneyDTO(journey, likesCount, commentsCount, comments);
+                    // Convert to CommentDTO
+                    List<CommentDTO> commentDTOs = comments.stream()
+                            .map(comment -> new CommentDTO(comment, userId))
+                            .collect(Collectors.toList());
+                    // Get count of likes and comments
+                    Long likesCount = (long)likes.size();
+                    Long commentsCount = (long)comments.size();
+
+                    return new JourneyDTO(journey, likeDTOs, likesCount, commentDTOs, commentsCount, userId);
                 })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
-
 
     // add additional methods
 }

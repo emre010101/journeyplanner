@@ -33,6 +33,17 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody CommentRequest request) {
+        try {
+            Comment comment = commentService.updateComment(id, request.getContent());
+            return ResponseEntity.status(HttpStatus.OK).body(comment);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    //Only for Testing, this endpoint will not be used.
     @GetMapping("/getAllComments")
     public ResponseEntity<List<Comment>> getComments() {
         List<Comment> comments = commentService.getAllComments();
