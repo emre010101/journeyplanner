@@ -70,9 +70,14 @@ public class JourneyService {
 
 
 
-    public Page<JourneyDTO> getJourneys(Pageable pageable, String origin, String destination) {
-        Page<Journey> journeys = journeyRepository.findAll(pageable);
+    public Page<JourneyDTO> getJourneys(Pageable pageable, String origin, String destination, Boolean onlyUserJourneys) {
         Long userId = authenticationService.getAuthenticatedUser().getId();
+        Page<Journey> journeys;
+        if(onlyUserJourneys){
+            journeys = journeyRepository.findByUserId(userId, pageable);
+        }else{
+            journeys = journeyRepository.findAll(pageable);
+        }
 
         List<JourneyDTO> dtos = journeys.stream()
                 .map(journey -> {

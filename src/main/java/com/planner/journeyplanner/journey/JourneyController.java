@@ -31,22 +31,9 @@ public class JourneyController {
     }
 
 
-/*
     @GetMapping("/getJourneys")
     public ResponseEntity<Page<JourneyDTO>> getJourneysWithLikesAndComments(
-            @RequestParam(defaultValue = "dateCreated") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
-        Page<JourneyDTO> journeyPage = journeyService.getJourneys(pageable);
-
-        return ResponseEntity.ok(journeyPage);
-    }*/
-
-    @GetMapping("/getJourneys")
-    public ResponseEntity<Page<JourneyDTO>> getJourneysWithLikesAndComments(
+            @RequestParam(defaultValue = "false") Boolean onlyUserJourneys,
             @RequestParam(defaultValue = "dateCreated") String sortBy,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(defaultValue = "0") int page,
@@ -55,7 +42,7 @@ public class JourneyController {
             @RequestParam(required = false) String destination) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
-        Page<JourneyDTO> journeyPage = journeyService.getJourneys(pageable, origin, destination);
+        Page<JourneyDTO> journeyPage = journeyService.getJourneys(pageable, origin, destination, onlyUserJourneys);
 
         return ResponseEntity.ok(journeyPage);
     }

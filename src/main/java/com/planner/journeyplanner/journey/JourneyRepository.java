@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface JourneyRepository extends JpaRepository<Journey, Long> {
 
-    List<Journey> findByUser(User user);
+    Page<Journey> findByUserId(Long userId, Pageable pageable);
 
     List<Journey> findByOriginAndDestination(Location origin, Location destination);
 

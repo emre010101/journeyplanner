@@ -24,12 +24,16 @@
     </select>
 
     <select id="page-size">
+        <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="30">30</option>
     </select>
 
     <button id="search-btn">Search</button>
+    <button class="nav-btn pre" id="prev-btn">Previous</button>
+    <span class="page-numbers"></span>
+    <button class="nav-btn nxt" id="next-btn">Next</button>
 </div>
 
 <div id="journeys-container">
@@ -45,6 +49,12 @@
 
 <!-- Sign In Modal -->
 <div id="signInModal" class="modal">
+</div>
+
+<div id="page-buttons">
+    <button class="nav-btn pre" id="prev-btn-bottom">Previous</button>
+    <span class="page-numbers"></span>
+    <button class="nav-btn nxt" id="next-btn-bottom">Next</button>
 </div>
 
 

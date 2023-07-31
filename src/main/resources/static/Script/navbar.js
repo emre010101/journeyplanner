@@ -283,6 +283,7 @@ function logOutUser(elements){
       loggedInUser = null;
       localStorage.removeItem('accessToken');
       localStorage.removeItem('loggedInUser');
+      localStorage.removeItem('searchParams');
       setPageState(loggedInUser, elements)
     })
     .catch((error) => {
