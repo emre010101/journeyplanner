@@ -26,13 +26,14 @@ public class JourneyDTO {
     private LocalDateTime dateCreated;
     private String description;
     private UserDTO userDTO;
-    private List<LikeDTO> likeDTO;
+    //private List<LikeDTO> likeDTO;
     private Long likesCount;
+    private Boolean isUserLike;
     private List<CommentDTO> comments;
     private Long commentsCount;
     private boolean isUserJourney;
 
-    public JourneyDTO(Journey journey, List<LikeDTO> likeDTO, Long likesCount, List<CommentDTO> comments, Long commentsCount, Long userId) {
+    public JourneyDTO(Journey journey, Boolean isUserLike, Long likesCount, List<CommentDTO> comments, Long commentsCount, Long userId) {
         this.id = journey.getId();
         this.journeyTitle = journey.getJourneyTitle();
         this.staticMapUrl = journey.getStaticMapUrl();
@@ -41,7 +42,8 @@ public class JourneyDTO {
         this.dateCreated = journey.getDateCreated();
         this.description = journey.getDescription();
         this.userDTO = new UserDTO(journey.getUser());
-        this.likeDTO = likeDTO;
+        this.isUserLike = isUserLike;
+        //this.likeDTO = likeDTO;
         this.likesCount = likesCount;
         this.comments = comments;
         this.commentsCount = commentsCount;

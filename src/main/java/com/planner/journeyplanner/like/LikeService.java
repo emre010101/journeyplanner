@@ -44,4 +44,14 @@ public class LikeService {
     public List<Like> getLikesByJourney(Long journeyId) {
         return likeRepository.findAllByJourneyId(journeyId);
     }
+
+    //If the user doesn't have a like in this journey return false.
+    public Boolean getLikeByUserJourney(Long userId, Long journeyId) {
+        Optional<Like> like = likeRepository.findByUserIdAndJourneyId(userId, journeyId);
+        if(like.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

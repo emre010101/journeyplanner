@@ -83,10 +83,9 @@ public class JourneyService {
                 .map(journey -> {
                     // Get likes for the journey
                     List<Like> likes = likeService.getLikesByJourney(journey.getId());
-                    // Convert to LikeDTO
-                    List<LikeDTO> likeDTOs = likes.stream()
-                            .map(like -> new LikeDTO(like, userId))
-                            .collect(Collectors.toList());
+                    //Check if User Like it Before
+                    Boolean isUserLike = likeService.getLikeByUserJourney(userId, journey.getId());
+
                     // Get comments for the journey
                     List<Comment> comments = commentService.getCommentsByJourneyId(journey.getId());
                     // Convert to CommentDTO
@@ -97,7 +96,7 @@ public class JourneyService {
                     Long likesCount = (long)likes.size();
                     Long commentsCount = (long)comments.size();
 
-                    return new JourneyDTO(journey, likeDTOs, likesCount, commentDTOs, commentsCount, userId);
+                    return new JourneyDTO(journey, isUserLike, likesCount, commentDTOs, commentsCount, userId);
                 })
                 .collect(Collectors.toList());
 

@@ -120,75 +120,107 @@ function createJourneyContainer(journey) {
     journeyContainer.className = 'journey-container';
     journeyContainer.id = 'journey-' + journey.id;
 
-    // Create the general information section
-    let generalInfo = document.createElement('div');
-    generalInfo.className = 'general-info';
-
-    // Add the journey title
-    let title = document.createElement('h2');
-    title.innerText = journey.journeyTitle;
-    generalInfo.appendChild(title);
-
-    // Add the creation date
-    let dateCreated = document.createElement('p');
-    dateCreated.innerText = journey.dateCreated;
-    generalInfo.appendChild(dateCreated);
-
-    // Add the user info
-    let user = document.createElement('p');
-    user.innerText = journey.userDTO.firstName + ' ' + journey.userDTO.lastName;
-    generalInfo.appendChild(user);
-
-    //Add legs count
-    let countOfLegs = document.createElement('p');
-    countOfLegs.innerText = "The number of legs in the journey: " + journey.journeyDetails.legs.length;
-
-    generalInfo.appendChild(countOfLegs);
-
     // Append the general info to the journey container
-    journeyContainer.appendChild(generalInfo);
-
-    // TODO: Add other components like Journey Details, Image, and Buttons
-
-    journeyContainer.appendChild(createJourneyDetailElement(journey));
+    journeyContainer.appendChild(createNameDateTitle(journey));
+    journeyContainer.appendChild(createGeneralJourneyDetails(journey));
+    //Append all the details of the legs
+    journeyContainer.appendChild(createJourneyLegsDetail(journey));
+    //Display the imagine which represent the trip
     journeyContainer.appendChild(createJourneyImageElement(journey));
+
     journeyContainer.appendChild(createJourneyActionButtons(journey));
 
     // Return the journey container
     return journeyContainer;
 }
-function createJourneyDetailElement(journey) {
+
+function createNameDateTitle(journey){
+    // Create the general information section
+    let generalInfo = document.createElement('div');
+    generalInfo.className = 'general-info';
+    // Add the journey title
+    let title = document.createElement('h2');
+    title.innerText = journey.journeyTitle;
+    generalInfo.appendChild(title);
+    // Add the creation date
+    let dateCreated = document.createElement('p');
+    dateCreated.setAttribute('class', 'date');
+    dateCreated.innerText = journey.dateCreated;
+    generalInfo.appendChild(dateCreated);
+    // Add the user info
+    let user = document.createElement('p');
+    user.innerText = journey.userDTO.firstName + ' ' + journey.userDTO.lastName;
+    generalInfo.appendChild(user);
+    return generalInfo;
+}
+function createGeneralJourneyDetails(journey){
     // Create the journey details section
     let journeyDetails = document.createElement('div');
     journeyDetails.className = 'journey-details';
-
+    //Add legs count
+    let countOfLegs = document.createElement('p');
+    countOfLegs.innerText = "The number of legs in the journey: " + journey.journeyDetails.legs.length;
+    journeyDetails.appendChild(countOfLegs);
     // Add the total distance
     let totalDistance = document.createElement('p');
     totalDistance.innerText = 'Total Distance: ' + journey.journeyDetails.totalDistanceKilometers + ' km';
     journeyDetails.appendChild(totalDistance);
-
     // Add the total duration
     let totalDuration = document.createElement('p');
     totalDuration.innerText = 'Total Duration: ' + journey.journeyDetails.totalDurationHours + ' hours';
     journeyDetails.appendChild(totalDuration);
+    return journeyDetails;
+}
+function createJourneyLegsDetail(journey) {
+    // Create a main container for the journey details
+    let journeyDetailMainContainer = document.createElement('div');
+    journeyDetailMainContainer.className = 'journey-leg-container';
 
-    // TODO: Add other details
+    // Create a container for the journey details
+    let journeyDetailsContainer = document.createElement('div');
+    journeyDetailsContainer.className = 'journey-leg';
+    journeyDetailsContainer.style.display = 'none';  // Initially hide the details
 
     // Create a button to show/hide the journey details
     let detailsButton = document.createElement('button');
     detailsButton.innerText = 'See More Details';
     detailsButton.onclick = function() {
         // Toggle the visibility of the journey details
-        if (journeyDetails.style.display === 'none') {
-            journeyDetails.style.display = 'block';
+        if (journeyDetailsContainer.style.display === 'none') {
+            journeyDetailsContainer.style.display = 'block';
         } else {
-            journeyDetails.style.display = 'none';
+            journeyDetailsContainer.style.display = 'none';
         }
     };
-    journeyDetails.appendChild(detailsButton);
 
-    return journeyDetails;
+    // Append the button to the main container
+    journeyDetailMainContainer.appendChild(detailsButton);
+
+    // Create a new div for each leg in the journey
+    for (let leg of journey.journeyDetails.legs) {
+        let legContainer = document.createElement('div');
+
+        // Add the details for the leg to the leg container
+        legContainer.innerHTML = `
+            <h3>Leg ${leg.legNumber}</h3>
+            <p>Titles: ${leg.startTitle} to ${leg.endTitle}</p>
+            <p>Start Location: ${leg.startLocation}</p>
+            <p>End Location: ${leg.endLocation}</p>
+            <p>Distance: ${leg.distanceKilometers} km</p>
+            <p>Duration: ${leg.durationHours} hours</p>
+        `;
+
+        // Append the leg container to the journey details container
+        journeyDetailsContainer.appendChild(legContainer);
+    }
+
+    // Append the details container to the main container
+    journeyDetailMainContainer.appendChild(journeyDetailsContainer);
+
+    return journeyDetailMainContainer;
 }
+
+
 
 // Function to create journey image element
 function createJourneyImageElement(journey) {
@@ -201,49 +233,79 @@ function createJourneyImageElement(journey) {
 
     return journeyImageContainer;
 }
-// Function to create journey action buttons
+
 function createJourneyActionButtons(journey) {
     let journeyActionsContainer = document.createElement('div');
     journeyActionsContainer.className = 'journey-actions-container';
 
-    let likeButton = document.createElement('button');
-    likeButton.innerText = 'Like';
-    journeyActionsContainer.appendChild(likeButton);
-
-    let commentButton = document.createElement('button');
-    commentButton.innerText = 'Comment';
-    journeyActionsContainer.appendChild(commentButton);
-
+    journeyActionsContainer.appendChild(createLikeButton(journey));
+    journeyActionsContainer.appendChild(createDisplayOnGoogleButton(journey));
     if (journey.userJourney) {
-        let deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Delete Journey';
-        journeyActionsContainer.appendChild(deleteButton);
+        journeyActionsContainer.appendChild(createDeleteButton(journey));
     }
-
-    let displayOnGoogle = document.createElement('a');
-    displayOnGoogle.className = 'button';
-    displayOnGoogle.setAttribute('href', journey.urlToGoGMap);
-    displayOnGoogle,innerText = "Display on Google";
-    journeyActionsContainer.appendChild(displayOnGoogle);
-
-   /* var mydiv = document.getElementById("myDiv");
-    var aTag = document.createElement('a');
-    aTag.setAttribute('href',"yourlink.htm");
-    aTag.innerText = "link text";
-    mydiv.appendChild(aTag);*/
-
+    journeyActionsContainer.appendChild(createCommentButton(journey));
 
     return journeyActionsContainer;
 }
 
+function createLikeButton(journey) {
+    let likeButton = document.createElement('button');
+    let likeCount = document.createElement('span');
 
-function displayJourneys(journeys) {
-    const container = document.getElementById('journeys-container');
-    container.innerHTML = '';  // clear existing journeys
+    likeButton.className = journey.isUserLike ? 'like-button liked' : 'like-button';
+    likeButton.innerHTML = journey.isUserLike ? '❤️' : '🤍';
+    likeButton.onclick = function() {
+        // Toggle like status and update the button and count
+        journey.isUserLike = !journey.isUserLike;
+        likeButton.className = journey.isUserLike ? 'like-button liked' : 'like-button';
+        likeButton.innerHTML = journey.isUserLike ? '❤️' : '🤍';
+        likeCount.innerText = journey.likesCount;  // Getting the count
+    };
+    likeCount.className = 'like-count';
+    likeCount.innerText = journey.likesCount;
 
-    journeys.forEach(journey => {
-        const journeyDiv = document.createElement('div');
-        journeyDiv.textContent = JSON.stringify(journey);  // simplistic display, replace with how you want to display the journeys
-        container.appendChild(journeyDiv);
-    });
+    let likeContainer = document.createElement('div');
+    likeContainer.appendChild(likeButton);
+    likeContainer.appendChild(likeCount);
+
+    return likeContainer;
 }
+
+function createCommentButton(journey) {
+    let commentButton = document.createElement('button');
+    commentButton.innerText = 'Comment';
+    commentButton.onclick = function() {
+        // TODO: Open comment box
+    };
+
+    let commentCount = document.createElement('span');
+    commentCount.innerText = journey.commentsCount;  // Assume 'comments' is the list of comments
+
+    let commentContainer = document.createElement('div');
+    commentContainer.appendChild(commentButton);
+    commentContainer.appendChild(commentCount);
+
+    return commentContainer;
+}
+
+function createDeleteButton(journey) {
+    let deleteButton = document.createElement('button');
+    deleteButton.innerText = 'Delete Journey';
+    deleteButton.onclick = function() {
+        // TODO: Delete the journey
+    };
+
+    return deleteButton;
+}
+
+function createDisplayOnGoogleButton(journey) {
+    let displayOnGoogle = document.createElement('a');
+    displayOnGoogle.className = 'display-button';
+    displayOnGoogle.setAttribute('href', journey.urlToGoGMap);
+    displayOnGoogle.setAttribute('target', '_blank');
+    displayOnGoogle.innerText = "Display on Google";
+
+    return displayOnGoogle;
+}
+
+
