@@ -1,7 +1,7 @@
 // Store parameters in an object to manage state
 let searchParams = {
     sortBy: 'dateCreated',
-    direction: 'asc',
+    direction: 'desc',
     onlyUserJourneys: false,
     origin: null,
     destination: null,
@@ -74,6 +74,9 @@ let prevButtons = document.getElementsByClassName('nav-btn pre');
 for(let i = 0; i < prevButtons.length; i++) {
     prevButtons[i].addEventListener('click', previousPage);
 }
+document.getElementById('to-top').addEventListener('click', function() {
+    window.scrollTo(0, 0);
+});
 
 
 // Load search parameters from local storage when page is loaded
@@ -127,8 +130,9 @@ function createJourneyContainer(journey) {
     journeyContainer.appendChild(createJourneyLegsDetail(journey));
     //Display the imagine which represent the trip
     journeyContainer.appendChild(createJourneyImageElement(journey));
-
     journeyContainer.appendChild(createJourneyActionButtons(journey));
+    let commentSection = createCommentSection(journey);
+    journeyContainer.appendChild(commentSection);
 
     // Return the journey container
     return journeyContainer;
@@ -306,6 +310,75 @@ function createDisplayOnGoogleButton(journey) {
     displayOnGoogle.innerText = "Display on Google";
 
     return displayOnGoogle;
+}
+
+function createCommentSection(journey) {
+    let commentSection = document.createElement('div');
+    commentSection.className = 'comment-section';
+    commentSection.id = 'comment-section-' + journey.comments.id;  // Use the journey ID as part of the comment section ID
+
+    let allCommentsContainer = document.createElement('div');
+    allCommentsContainer.className = 'all-comments';
+    allCommentsContainer.style.display = 'none';  // Initially, hide all comments
+
+    journey.comments.forEach((comment) => {
+        let commentDiv = createCommentDiv(comment);  // Function to create a div for each comment
+        allCommentsContainer.appendChild(commentDiv);
+    });
+
+    let showMoreButton = document.createElement('button');
+    showMoreButton.innerText = 'Show More Comments';
+    showMoreButton.onclick = function() {
+        if (allCommentsContainer.style.display === 'none') {
+            allCommentsContainer.style.display = 'block';
+            showMoreButton.innerText = 'Show Comments';
+        } else {
+            allCommentsContainer.style.display = 'none';
+            showMoreButton.innerText = 'Close Comments';
+        }
+    };
+    commentSection.appendChild(showMoreButton);
+
+    commentSection.appendChild(allCommentsContainer);
+
+    return commentSection;
+}
+
+function createCommentDiv(comment) {
+    let commentDiv = document.createElement('div');
+    commentDiv.className = 'comment';
+
+    let commentContent = document.createElement('p');
+    commentContent.innerText = comment.content;
+
+    let commentUser = document.createElement('span');
+    commentUser.innerText = comment.userDTO.firstName + ' ' + comment.userDTO.lastName;
+
+    let commentDate = document.createElement('span');
+    commentDate.innerText = comment.updatedDate ? `Updated: ${comment.updatedDate}` : `Created: ${comment.createdDate}`;
+
+    commentDiv.appendChild(commentContent);
+    commentDiv.appendChild(commentUser);
+    commentDiv.appendChild(commentDate);
+
+    if (comment.userComment) {
+        let deleteButton = document.createElement('button');
+        deleteButton.innerText = 'Delete Comment';
+        deleteButton.onclick = function() {
+            // TODO: Delete the comment
+        };
+
+        let updateButton = document.createElement('button');
+        updateButton.innerText = 'Update Comment';
+        updateButton.onclick = function() {
+            // TODO: Update the comment
+        };
+
+        commentDiv.appendChild(deleteButton);
+        commentDiv.appendChild(updateButton);
+    }
+
+    return commentDiv;
 }
 
 

@@ -19,8 +19,8 @@
     <input type="text" id="destination" placeholder="Destination">
 
     <select id="sort-direction">
-        <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
     </select>
 
     <select id="page-size">
@@ -36,11 +36,18 @@
     <button class="nav-btn nxt" id="next-btn">Next</button>
 </div>
 
-<div id="journeys-container">
-    <!-- Journeys will be added here -->
+<div id="content-area">
+    <div id="journeys-container">
+        <!-- Journeys will be added here -->
+    </div>
 </div>
 
-
+<div id="page-buttons">
+    <button class="nav-btn pre" id="prev-btn-bottom">Previous</button>
+    <span class="page-numbers"></span>
+    <button class="nav-btn nxt" id="next-btn-bottom">Next</button>
+    <button id="to-top">Go to top</button>
+</div>
 
 
 <!-- Log In Modal -->
@@ -49,12 +56,6 @@
 
 <!-- Sign In Modal -->
 <div id="signInModal" class="modal">
-</div>
-
-<div id="page-buttons">
-    <button class="nav-btn pre" id="prev-btn-bottom">Previous</button>
-    <span class="page-numbers"></span>
-    <button class="nav-btn nxt" id="next-btn-bottom">Next</button>
 </div>
 
 

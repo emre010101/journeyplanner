@@ -1,8 +1,62 @@
-.display-button {
-
+#content-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
 }
 
+.journey-container {
+    width: 80%;
+    max-width: 800px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
 
+.general-info, .journey-details, .journey-leg-container, .journey-image-container, .journey-actions-container, .comment-section {
+    margin-bottom: 20px;
+}
+
+.general-info h2, .journey-details p, .journey-actions-container div, .comment-section .comment p {
+    margin-bottom: 10px;
+}
+
+.journey-leg-container .journey-leg {
+    margin-bottom: 15px;
+}
+
+.journey-image-container img {
+    width: 100%;
+    height: auto;
+}
+
+.journey-actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.comment-section {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.all-comments {
+    margin-top: 20px;
+}
+
+.comment {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: 10px;
+}
 
 
 
@@ -40,10 +94,10 @@
     display: flex;
     justify-content: center;
     padding: 20px;
-    position: fixed;
+    #position: fixed;
     bottom: 0;
     width: 100%;
     background-color: #fff;
+    margin-top: auto;
 }
-
 
