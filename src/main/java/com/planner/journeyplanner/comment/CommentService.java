@@ -27,7 +27,7 @@ public class CommentService {
 
     //public Long getCommentsCountByJourneyId(Long journeyId){return commentRepository.}
 
-    public Comment createComment(Long journeyId, String content) throws ResourceNotFoundException {
+    public CommentDTO createComment(Long journeyId, String content) throws ResourceNotFoundException {
         User user = authenticationService.getAuthenticatedUser();
         Journey journey = journeyRepository.findById(journeyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Journey with id " + journeyId + " not found"));
@@ -38,7 +38,9 @@ public class CommentService {
                                 .journey(journey)
                                         .user(user)
                                                 .build();
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        CommentDTO commentDTO = new CommentDTO(comment, user.getId());
+        return commentDTO;
     }
 
     public void deleteComment(Long id) throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -59,17 +61,22 @@ public class CommentService {
     }
 
 
-    public Comment updateComment(Long id, String content) throws ResourceNotFoundException {
+    public CommentDTO updateComment(Long id, String content) throws ResourceNotFoundException, UnauthorizedAccessException {
+        User user = authenticationService.getAuthenticatedUser();
         Optional<Comment> comment = commentRepository.findById(id);
-
         if(!comment.isPresent()) {
             throw new ResourceNotFoundException("The comment is now exist!");
         }
-
         Comment existingComment = comment.get();
+        //Check if the comment is belonged to user
+        if(existingComment.getUser()!=user){
+            throw new UnauthorizedAccessException("The comment is not belong to user");
+        }
 
         existingComment.setContent(content);
+        commentRepository.save(existingComment);
+        CommentDTO commentDTO = new CommentDTO(existingComment, user.getId());
 
-        return commentRepository.save(existingComment);
+        return commentDTO;
     }
 }

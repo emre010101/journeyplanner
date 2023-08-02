@@ -19,31 +19,32 @@ public class CommentController {
     @PostMapping("/create")
     public ResponseEntity<?> createComment(@RequestBody CommentRequest request) {
         try {
-            Comment comment = commentService.createComment(request.getJourneyId(), request.getContent());
-            return ResponseEntity.status(HttpStatus.CREATED).body(comment);
+            CommentDTO comment = commentService.createComment(request.getJourneyId(), request.getContent());
+            return ResponseEntity.ok(comment);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id) throws UnauthorizedAccessException, ResourceNotFoundException {
         commentService.deleteComment(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody CommentRequest request) {
         try {
-            Comment comment = commentService.updateComment(id, request.getContent());
+            CommentDTO comment = commentService.updateComment(id, request.getContent());
             return ResponseEntity.status(HttpStatus.OK).body(comment);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (UnauthorizedAccessException ue){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ue.getMessage());
         }
     }
 
-    //Only for Testing, this endpoint will not be used.
+    //Only for Testing, this endpoint will not be used in the client side.
     @GetMapping("/getAllComments")
     public ResponseEntity<List<Comment>> getComments() {
         List<Comment> comments = commentService.getAllComments();

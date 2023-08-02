@@ -93,11 +93,60 @@
 #page-buttons {
     display: flex;
     justify-content: center;
-    padding: 20px;
-    #position: fixed;
+    padding: 10px;
     bottom: 0;
     width: 100%;
     background-color: #fff;
     margin-top: auto;
 }
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////*/
+#comment-modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#comment-modal form {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+}
+
+#comment-modal textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#comment-modal button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+}
+
+#comment-modal button:hover {
+    background-color: #45a049;
+}
+
 

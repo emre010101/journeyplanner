@@ -35,6 +35,7 @@ async function fetchJourneys() {
     console.log(serverResponse);
     // Update local storage with current search parameters
     localStorage.setItem('searchParams', JSON.stringify(searchParams));
+    updatePageNumbers();
     iterateJourneys(serverResponse);
     return serverResponse;
 }
@@ -89,7 +90,13 @@ window.onload = function() {
     fetchJourneys();
 };
 
-
+function updatePageNumbers() {
+    // Assumes serverResponse has a totalPages property
+    const pageNumElems = document.querySelectorAll('.page-numbers');
+    pageNumElems.forEach(elem => {
+        elem.textContent = `${searchParams.page + 1}`;
+    });
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -279,7 +286,10 @@ function createCommentButton(journey) {
     let commentButton = document.createElement('button');
     commentButton.innerText = 'Comment';
     commentButton.onclick = function() {
-        // TODO: Open comment box
+        // When button is clicked, display the comment input modal
+        console.log("The comment button is clicked!!");
+        let modal = document.getElementById('comment-modal');
+        modal.style.display = 'block';  // Show the modal
     };
 
     let commentCount = document.createElement('span');
@@ -315,7 +325,7 @@ function createDisplayOnGoogleButton(journey) {
 function createCommentSection(journey) {
     let commentSection = document.createElement('div');
     commentSection.className = 'comment-section';
-    commentSection.id = 'comment-section-' + journey.comments.id;  // Use the journey ID as part of the comment section ID
+    commentSection.id = 'comment-section-' + journey.id;  // Use the journey ID as part of the comment section ID
 
     let allCommentsContainer = document.createElement('div');
     allCommentsContainer.className = 'all-comments';
@@ -347,6 +357,7 @@ function createCommentSection(journey) {
 function createCommentDiv(comment) {
     let commentDiv = document.createElement('div');
     commentDiv.className = 'comment';
+    commentDiv.setAttribute('id', 'comment-id-' + comment.id);
 
     let commentContent = document.createElement('p');
     commentContent.innerText = comment.content;
@@ -379,6 +390,63 @@ function createCommentDiv(comment) {
     }
 
     return commentDiv;
+}
+
+
+//////////////Comments End points Fetching
+// Function to create a new comment
+function createNewComment(content, journeyId) {
+    // Call an API endpoint to create a new comment here.
+    fetch('https://your-api-endpoint/comments', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            content: content,
+            journeyId: journeyId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let commentSection = document.getElementById('comment-section-' + journeyId);
+        let newComment = createCommentDiv(data);
+        commentSection.appendChild(newComment);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Function to update a comment
+function updateComment(content, commentId, journeyId) {
+    // You need to call an API endpoint to update a comment here.
+    fetch('https://your-api-endpoint/comments/' + commentId, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            content: content
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let commentDiv = document.getElementById('comment-' + commentId);
+        commentDiv.querySelector('p').innerText = data.content;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Function to delete a comment
+function deleteComment(commentId, journeyId) {
+    // You need to call an API endpoint to delete a comment here.
+    fetch('https://your-api-endpoint/comments/' + commentId, {
+        method: 'DELETE'
+    })
+    .then(() => {
+        let commentDiv = document.getElementById('comment-' + commentId);
+        commentDiv.remove();
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 

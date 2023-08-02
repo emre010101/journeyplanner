@@ -9,7 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+/*
+* date: 22/07/2023
+* LikeService.class
+* author : Emre Kavak
+* This class designed to handling like entity saving, deleting ...
+* */
 @Service
 @RequiredArgsConstructor
 public class LikeService {
