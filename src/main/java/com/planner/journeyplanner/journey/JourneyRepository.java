@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.planner.journeyplanner.user.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface JourneyRepository extends JpaRepository<Journey, Long> {
@@ -15,13 +16,13 @@ public interface JourneyRepository extends JpaRepository<Journey, Long> {
 
     List<Journey> findByOriginAndDestination(Location origin, Location destination);
 
-    Page<Journey> findByUserEmail(String email, Pageable pageable);
-
     Page<Journey> findByOriginAndDestination(String origin, String destination, Pageable pageable);
 
     Page<Journey> findByOrigin(String origin, Pageable pageable);
 
     Page<Journey> findByDestination(String destination, Pageable pageable);
+
+    Optional<Journey> findById(Long journeyId);
 
 
     // additional query methods go here

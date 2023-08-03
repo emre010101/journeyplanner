@@ -59,4 +59,8 @@ public class LikeService {
             return false;
         }
     }
+
+    public void deleteByJourney(Journey journey) {
+         likeRepository.deleteByJourneyId(journey.getId());
+    }
 }

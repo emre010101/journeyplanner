@@ -59,9 +59,6 @@ public class JourneyService {
         return journeyRepository.findAll();
     }
 
-    public Optional<Journey> findById(Long id) {
-        return journeyRepository.findById(id);
-    }
 
 
     public List<Journey> findByOriginAndDestination(String originName, String destinationName) throws ResourceNotFoundException {
@@ -113,7 +110,20 @@ public class JourneyService {
         if (!Objects.equals(journey.getUser().getId(), user.getId())) {
             throw new UnauthorizedAccessException("User is not authorized to delete this comment");
         }
-
+        //Firstly, save the locations
+        Location origin = journey.getOrigin();
+        Location destination = journey.getDestination();
+        //Secondly, set the origin and destination to null then save it in the database
+        journey.setOrigin(null);
+        journey.setDestination(null);
+        journeyRepository.save(journey);
+        //Delete the locations in the database
+        locationService.deleteLocation(origin);
+        locationService.deleteLocation(destination);
+        //Delete comments and likes associated with it
+        likeService.deleteByJourney(journey);
+        commentService.deleteByJourney(journey);
+        //Lastly delete the journey
         journeyRepository.delete(journey);
     }
 }

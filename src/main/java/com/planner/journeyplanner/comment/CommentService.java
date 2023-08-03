@@ -79,4 +79,8 @@ public class CommentService {
 
         return commentDTO;
     }
+
+    public void deleteByJourney(Journey journey) {
+        commentRepository.deleteByJourneyId(journey.getId());
+    }
 }

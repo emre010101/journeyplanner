@@ -84,4 +84,5 @@ public class Journey {
     protected void onUpdate() {
         dateUpdated = LocalDateTime.now();
     }
+
 }

@@ -15,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import java.util.Optional;
 
 /*
-* date
-*
+* date: 14/07/2023
+* author: Emre Kavak
+* JourneyController.class
+* It's a controller class for journeys, restfull api used to create endpoints.
 * */
 
 @RestController

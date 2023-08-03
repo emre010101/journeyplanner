@@ -33,6 +33,7 @@ window.addEventListener("load", function() {
     });
 });
 
+//Loading the other html elements dynamically
 function loadComponent(elementId, componentPath) {
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
@@ -166,6 +167,10 @@ function loginUser(loginEmail, password, elements) {
         //Store JWT token in localStorege
         localStorage.setItem('accessToken', data.access_token);
         localStorage.setItem('loggedInUser', loggedInUser);
+        // if the current page is communityRoom.html, reload it
+        if (window.location.pathname.endsWith('communityRoom.html')) {
+            location.reload();
+        }
 
     })
     .catch((error) => {
@@ -229,6 +234,10 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName, elem
         //Store JWT token in localStorege
         localStorage.setItem('accessToken', data.access_token);
         localStorage.setItem('loggedInUser', loggedInUser);
+        // if the current page is communityRoom.html, reload it
+        if (window.location.pathname.endsWith('communityRoom.html')) {
+            location.reload();
+        }
     })
     .catch((error) => {
         console.error('Error:', error);

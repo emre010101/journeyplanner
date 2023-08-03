@@ -265,15 +265,24 @@ function createLikeButton(journey) {
 
     likeButton.className = journey.isUserLike ? 'like-button liked' : 'like-button';
     likeButton.innerHTML = journey.isUserLike ? '❤️' : '🤍';
+    //Variable for likeCount
+    let likesCount = journey.likesCount;
     likeButton.onclick = function() {
         // Toggle like status and update the button and count
         journey.isUserLike = !journey.isUserLike;
+        if (journey.isUserLike) {
+            sendLike(journey.id);
+            likesCount++;
+        } else {
+            undoLike(journey.id);
+            likesCount--;
+        }
         likeButton.className = journey.isUserLike ? 'like-button liked' : 'like-button';
         likeButton.innerHTML = journey.isUserLike ? '❤️' : '🤍';
-        likeCount.innerText = journey.likesCount;  // Getting the count
+        likeCount.innerText = likesCount;  // Getting the count
     };
     likeCount.className = 'like-count';
-    likeCount.innerText = journey.likesCount;
+    likeCount.innerText = likesCount;
 
     let likeContainer = document.createElement('div');
     likeContainer.appendChild(likeButton);
@@ -308,7 +317,6 @@ function createCommentButton(journey) {
 function createDeleteButton(journey) {
     let deleteButton = document.createElement('button');
     deleteButton.innerText = 'Delete Journey';
-    deleteButton
     deleteButton.onclick = function() {
         console.log("Printing in journey delete button: "  + journey.id);
         deleteJourney(journey.id);
@@ -504,17 +512,56 @@ function deleteComment(commentId) {
 
 //Function to delete a journey
 function deleteJourney(journeyId){
+    console.log("This id:" + journeyId);
     //Call the API endpoint to delete the journey
-    fetch('http://localhost/api/jp/journey/delete/' + journeyId, {
+    fetch('http://localhost:8082/api/jp/journey/delete/' + journeyId, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
             'Content-Type': 'application/json'
         }
     })
-    .then(() => {
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // If you are here, it means deletion was successful
         let journeyDiv = document.getElementById('journey-' + journeyId);
         journeyDiv.remove();
+    })
+    .catch(error => console.error('Error: ', error));
+}
+
+function sendLike(journeyId) {
+    fetch('http://localhost:8082/api/jp/like/' + journeyId, {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        console.log("Like sent successfully.");
+    })
+    .catch(error => console.error('Error: ', error));
+}
+
+function undoLike(journeyId) {
+    fetch('http://localhost:8082/api/jp/like/' + journeyId, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        console.log("Like removed successfully.");
     })
     .catch(error => console.error('Error: ', error));
 }

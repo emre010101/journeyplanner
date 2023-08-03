@@ -12,8 +12,13 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-    public Location updateLocation(Location location) {
-        location.setCount(location.getCount() + 1);
+
+    public Location updateLocation(Location location, Boolean increase) {
+        if(increase){
+            location.setCount(location.getCount() + 1);
+        }else{
+            location.setCount((location.getCount() -1));
+        }
         return locationRepository.save(location);
     }
 
@@ -21,7 +26,7 @@ public class LocationService {
         Optional<Location> existingLocationOpt = locationRepository.findByName(name);
 
         if (existingLocationOpt.isPresent()) {
-            return updateLocation(existingLocationOpt.get());
+            return updateLocation(existingLocationOpt.get(), true);
         } else {
             Location location = Location
                     .builder()
@@ -39,5 +44,17 @@ public class LocationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Location with name " + locationName + " not found"));
     }
 
-    // add other methods for reading, updating, and deleting locations as needed
+    public void deleteLocation(Location location) {
+        try {
+            if(location.getCount() <= 1){
+                locationRepository.delete(location);
+            }else{
+                updateLocation(location, false);
+            }
+        }catch (NullPointerException e){
+            throw new NullPointerException("Locations are not coded for this journey");
+        }
+    }
+
+
 }
