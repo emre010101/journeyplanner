@@ -17,6 +17,7 @@ public class CommentDTO {
     private Long id;
     private String content;
     private UserDTO userDTO;
+    private Long journeyId;
     private boolean isUserComment;
     LocalDateTime createdDate;
     LocalDateTime updatedDate;
@@ -24,6 +25,7 @@ public class CommentDTO {
         this.id = comment.getId();
         this.content = comment.getContent();
         this.userDTO = new UserDTO(comment.getUser());
+        this.journeyId = comment.getJourney().getId();
         this.createdDate = comment.getDateCreated();
         this.updatedDate = comment.getDateUpdated();
         this.isUserComment = comment.getUser().getId().equals(userId);

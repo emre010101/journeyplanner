@@ -285,10 +285,12 @@ function createLikeButton(journey) {
 function createCommentButton(journey) {
     let commentButton = document.createElement('button');
     commentButton.innerText = 'Comment';
+    commentButton.dataset.journeyId = journey.id;  // Store the journey id as a data attribute
     commentButton.onclick = function() {
         // When button is clicked, display the comment input modal
         console.log("The comment button is clicked!!");
         let modal = document.getElementById('comment-modal');
+        modal.dataset.journeyId = this.dataset.journeyId;  // Pass the journey id to the modal
         modal.style.display = 'block';  // Show the modal
     };
 
@@ -302,11 +304,14 @@ function createCommentButton(journey) {
     return commentContainer;
 }
 
+
 function createDeleteButton(journey) {
     let deleteButton = document.createElement('button');
     deleteButton.innerText = 'Delete Journey';
+    deleteButton
     deleteButton.onclick = function() {
-        // TODO: Delete the journey
+        console.log("Printing in journey delete button: "  + journey.id);
+        deleteJourney(journey.id);
     };
 
     return deleteButton;
@@ -358,6 +363,7 @@ function createCommentDiv(comment) {
     let commentDiv = document.createElement('div');
     commentDiv.className = 'comment';
     commentDiv.setAttribute('id', 'comment-id-' + comment.id);
+    commentDiv.setAttribute('journey-id', + comment.journeyId);
 
     let commentContent = document.createElement('p');
     commentContent.innerText = comment.content;
@@ -366,7 +372,9 @@ function createCommentDiv(comment) {
     commentUser.innerText = comment.userDTO.firstName + ' ' + comment.userDTO.lastName;
 
     let commentDate = document.createElement('span');
+    commentDate.className = 'comment-date';
     commentDate.innerText = comment.updatedDate ? `Updated: ${comment.updatedDate}` : `Created: ${comment.createdDate}`;
+
 
     commentDiv.appendChild(commentContent);
     commentDiv.appendChild(commentUser);
@@ -376,13 +384,18 @@ function createCommentDiv(comment) {
         let deleteButton = document.createElement('button');
         deleteButton.innerText = 'Delete Comment';
         deleteButton.onclick = function() {
-            // TODO: Delete the comment
+           deleteComment(comment.id);
         };
 
         let updateButton = document.createElement('button');
         updateButton.innerText = 'Update Comment';
         updateButton.onclick = function() {
-            // TODO: Update the comment
+            // Open the comment modal for updating
+            let commentModal = document.getElementById('comment-modal');
+            commentModal.style.display = 'block';
+            commentModal.dataset.commentId = comment.id;
+            commentModal.dataset.journeyId = comment.journeyId;
+            document.getElementById('comment-input').value = comment.content;  // Load current comment into textarea
         };
 
         commentDiv.appendChild(deleteButton);
@@ -392,15 +405,38 @@ function createCommentDiv(comment) {
     return commentDiv;
 }
 
+// Event listener for form submission
+document.getElementById('comment-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let content = document.getElementById('comment-input').value;
+    let commentModal = document.getElementById('comment-modal');
+    let journeyId = parseInt(commentModal.dataset.journeyId);
+    let commentId = parseInt(commentModal.dataset.commentId);  // Get the comment id
+
+    if (commentId) {
+        // If a comment id exists, then update the comment
+        updateComment(content, journeyId, commentId);
+    } else {
+        // If no comment id exists, then create a new comment
+        createNewComment(content, journeyId);
+    }
+
+    document.getElementById('comment-input').value = '';
+    commentModal.style.display = 'none';
+    commentModal.dataset.journeyId = '';
+    commentModal.dataset.commentId = '';  // Clear the comment id
+});
 
 //////////////Comments End points Fetching
 // Function to create a new comment
 function createNewComment(content, journeyId) {
     // Call an API endpoint to create a new comment here.
-    fetch('https://your-api-endpoint/comments', {
+    fetch('http://localhost:8082/api/jp/comment/create', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+                'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             content: content,
@@ -417,36 +453,68 @@ function createNewComment(content, journeyId) {
 }
 
 // Function to update a comment
-function updateComment(content, commentId, journeyId) {
+function updateComment(content, journeyId, commentId) {
     // You need to call an API endpoint to update a comment here.
-    fetch('https://your-api-endpoint/comments/' + commentId, {
+    fetch('http://localhost:8082/api/jp/comment/update/' + commentId, {
         method: 'PUT',
         headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            content: content
+            content: content,
+            journeyId: journeyId
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        let commentDiv = document.getElementById('comment-' + commentId);
-        commentDiv.querySelector('p').innerText = data.content;
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error, status = ${response.status}`);
+        }
+        return response.json();
     })
-    .catch(error => console.error('Error:', error));
+    .then(data => {
+        let commentDiv = document.getElementById('comment-id-' + commentId);
+        commentDiv.querySelector('p').innerText = data.content;
+
+        let commentDate = commentDiv.querySelector('.comment-date');
+        commentDate.innerText = `Updated: ${data.updatedDate}`;  // Assume that the server returns an updated date
+    })
+    .catch(error => {
+        console.error('A problem occurred with the fetch operation:', error);
+    });
 }
 
+
 // Function to delete a comment
-function deleteComment(commentId, journeyId) {
-    // You need to call an API endpoint to delete a comment here.
-    fetch('https://your-api-endpoint/comments/' + commentId, {
-        method: 'DELETE'
+function deleteComment(commentId) {
+    // Call an API endpoint to delete a comment here.
+    fetch('http://localhost:8082/api/jp/comment/delete/' + commentId, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+        }
     })
     .then(() => {
-        let commentDiv = document.getElementById('comment-' + commentId);
+        let commentDiv = document.getElementById('comment-id-' + commentId);
         commentDiv.remove();
     })
     .catch(error => console.error('Error:', error));
 }
 
-
+//Function to delete a journey
+function deleteJourney(journeyId){
+    //Call the API endpoint to delete the journey
+    fetch('http://localhost/api/jp/journey/delete/' + journeyId, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(() => {
+        let journeyDiv = document.getElementById('journey-' + journeyId);
+        journeyDiv.remove();
+    })
+    .catch(error => console.error('Error: ', error));
+}

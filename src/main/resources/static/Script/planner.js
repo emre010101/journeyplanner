@@ -522,7 +522,7 @@ async function sentJourneyToServer() {
         console.log(responseData);
 
         // redirect the user to the communityRoom.html
-        //window.location.href = "communityRoom.html";
+        window.location.href = "communityRoom.html";
     } catch (error) {
         console.error('Error:', error);
     }

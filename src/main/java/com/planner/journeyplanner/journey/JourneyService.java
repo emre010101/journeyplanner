@@ -5,6 +5,7 @@ import com.planner.journeyplanner.comment.Comment;
 import com.planner.journeyplanner.comment.CommentDTO;
 import com.planner.journeyplanner.comment.CommentService;
 import com.planner.journeyplanner.exception.ResourceNotFoundException;
+import com.planner.journeyplanner.exception.UnauthorizedAccessException;
 import com.planner.journeyplanner.like.Like;
 import com.planner.journeyplanner.like.LikeDTO;
 import com.planner.journeyplanner.like.LikeService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -103,5 +105,15 @@ public class JourneyService {
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    // add additional methods
+    public void deleteJourney(Long id) throws ResourceNotFoundException, UnauthorizedAccessException {
+        User user = authenticationService.getAuthenticatedUser();
+        Journey journey = journeyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment with id " + id + " not found"));
+
+        if (!Objects.equals(journey.getUser().getId(), user.getId())) {
+            throw new UnauthorizedAccessException("User is not authorized to delete this comment");
+        }
+
+        journeyRepository.delete(journey);
+    }
 }

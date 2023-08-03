@@ -1,5 +1,7 @@
 package com.planner.journeyplanner.journey;
 
+import com.planner.journeyplanner.exception.ResourceNotFoundException;
+import com.planner.journeyplanner.exception.UnauthorizedAccessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +13,11 @@ import org.springframework.http.HttpStatus;
 
 
 import java.util.Optional;
+
+/*
+* date
+*
+* */
 
 @RestController
 @RequestMapping("/api/jp/journey")
@@ -47,7 +54,17 @@ public class JourneyController {
         return ResponseEntity.ok(journeyPage);
     }
 
-
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteJourney(@PathVariable Long id) {
+        try {
+            journeyService.deleteJourney(id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UnauthorizedAccessException ue){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
 
 }
