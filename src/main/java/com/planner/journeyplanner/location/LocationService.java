@@ -23,7 +23,7 @@ public class LocationService {
     }
 
     public Location createLocation(String name, String geocodedAddress) {
-        Optional<Location> existingLocationOpt = locationRepository.findByName(name);
+        Optional<Location> existingLocationOpt = locationRepository.findByNameIgnoreCase(name);
 
         if (existingLocationOpt.isPresent()) {
             return updateLocation(existingLocationOpt.get(), true);
@@ -39,9 +39,8 @@ public class LocationService {
 
 
 
-    public Location findByName(String locationName) throws ResourceNotFoundException {
-        return (Location) locationRepository.findByName(locationName)
-                .orElseThrow(() -> new ResourceNotFoundException("Location with name " + locationName + " not found"));
+    public Optional<Location> findByName(String locationName)  {
+        return (Optional<Location> ) locationRepository.findByNameIgnoreCase(locationName);
     }
 
     public void deleteLocation(Location location) {

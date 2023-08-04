@@ -3,11 +3,12 @@ let searchParams = {
     sortBy: 'dateCreated',
     direction: 'desc',
     onlyUserJourneys: false,
-    origin: null,
-    destination: null,
+    origin: '',
+    destination: '',
     page: 0,
     size: 5
 };
+
 //The main content
 let serverResponse;
 

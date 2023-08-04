@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,24 +61,42 @@ public class JourneyService {
     }
 
 
-
-    public List<Journey> findByOriginAndDestination(String originName, String destinationName) throws ResourceNotFoundException {
-        Location origin = locationService.findByName(originName);
-        Location destination = locationService.findByName(destinationName);
-        return journeyRepository.findByOriginAndDestination(origin, destination);
-    }
-
-
-
-    public Page<JourneyDTO> getJourneys(Pageable pageable, String origin, String destination, Boolean onlyUserJourneys) {
+    public Page<JourneyDTO> getJourneys(Pageable pageable, String origin, String destination, Boolean onlyUserJourneys)  {
         Long userId = authenticationService.getAuthenticatedUser().getId();
+        //Create scope journey page
         Page<Journey> journeys;
-        if(onlyUserJourneys){
-            journeys = journeyRepository.findByUserId(userId, pageable);
-        }else{
-            journeys = journeyRepository.findAll(pageable);
-        }
 
+        //Handle the get locations ids
+        Long originId = null;
+        if (origin != null && !origin.trim().isEmpty()) {
+            System.out.println("Received origin: " + origin);
+            Optional<Location> originLocation = locationService.findByName(origin);
+            if (originLocation.isPresent()) {
+                originId = originLocation.get().getId();
+            }
+        }
+        Long destinationId = null;
+        if (destination != null && !destination.trim().isEmpty()) {
+            System.out.println("REceived destinarion: " + destination);
+            Optional<Location> destinationLocation = locationService.findByName(destination);
+            if (destinationLocation.isPresent()) {
+                destinationId = destinationLocation.get().getId();
+            }
+        }
+        //Check what user want to filter
+        if (originId != null && destinationId != null) {
+            journeys = onlyUserJourneys ? journeyRepository.findByUserIdAndOriginIdAndDestinationId(userId, originId, destinationId, pageable)
+                    : journeyRepository.findByOriginIdAndDestinationId(originId, destinationId, pageable);
+        } else if (originId != null) {
+            journeys = onlyUserJourneys ? journeyRepository.findByUserIdAndOriginId(userId, originId, pageable)
+                    : journeyRepository.findByOriginId(originId, pageable);
+        } else if (destinationId != null) {
+            journeys = onlyUserJourneys ? journeyRepository.findByUserIdAndDestinationId(userId, destinationId, pageable)
+                    : journeyRepository.findByDestinationId(destinationId, pageable);
+        } else {
+            journeys = onlyUserJourneys ? journeyRepository.findByUserId(userId, pageable)
+                    : journeyRepository.findAll(pageable);
+        }
         List<JourneyDTO> dtos = journeys.stream()
                 .map(journey -> {
                     // Get likes for the journey

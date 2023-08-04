@@ -48,7 +48,7 @@ public class JourneyController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String origin,
-            @RequestParam(required = false) String destination) {
+            @RequestParam(required = false) String destination) throws ResourceNotFoundException {
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
         Page<JourneyDTO> journeyPage = journeyService.getJourneys(pageable, origin, destination, onlyUserJourneys);
