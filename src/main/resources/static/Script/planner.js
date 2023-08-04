@@ -545,7 +545,7 @@ function createStaticMapUrl(journeyDetails) {
     });
 
     // Define map size, in this case, 600x600
-    let size = 'size=600x600';
+    let size = 'size=600x450';
 
     // Construct the full URL
     let staticMapUrl = `${baseUrl}${size}&${path}&key=${apiKey}`;

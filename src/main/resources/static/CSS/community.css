@@ -17,15 +17,20 @@ body {
 }
 
 .journey-container {
-    background-color: #acbfd4;
+    background-color: rgba(172, 191, 212, 0.8);
     width: 80%;
     max-width: 800px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    margin: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
+    height: auto;
 }
-
+.general-info{
+    display: flex;
+    justify-content: space-between;
+}
 .general-info, .journey-details, .journey-leg-container, .journey-image-container, .journey-actions-container, .comment-section {
     margin-bottom: 20px;
 }
@@ -39,16 +44,19 @@ body {
 }
 
 .journey-image-container img {
+    height: 50%;
     width: 100%;
-    height: auto;
+    object-fit: cover;
 }
 
 .journey-actions-container {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Items will wrap onto new lines */
 }
+
 
 .comment-section {
     border-top: 1px solid #eee;
@@ -63,6 +71,31 @@ body {
     border-top: 1px solid #eee;
     padding-top: 10px;
     margin-top: 10px;
+}
+
+.like-button {
+    font-size: 30px; /* You can change this value as per your requirement */
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.journeyButtons {
+    background-color: #4CAF50; /* This is a nice green color, you can change it as per your requirement */
+    border: none; /* No border */
+    color: white; /* Text color is white */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* No underline or overline */
+    display: inline-block;
+    font-size: 16px; /* Adjust to suit your design */
+    transition-duration: 0.4s; /* Makes a nice, smooth transition */
+    cursor: pointer; /* Changes the cursor when you hover over the button */
+    padding: 10px 24px; /* The first value is the top/bottom padding, and the second is the left/right padding */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.journeyButtons:hover {
+    background-color: #45a049; /* This is a different shade of green, you can change it as per your requirement */
+    color: white; /* The text color stays the same when you hover */
 }
 
 

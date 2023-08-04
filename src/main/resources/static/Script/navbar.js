@@ -201,16 +201,26 @@ function handleSignInFormSubmission(elements){
         // Prevent the form from being submitted normally and avoid reload the page
         event.preventDefault();
 
-        // Get username and password from the form
+        // Get user details from the form
         var signinEmail = document.getElementById('signinEmail').value;
         var password = document.getElementById('signinPassword').value;
+        var confirmPassword = document.getElementById('signinConfirmPassword').value;
         var signinFirstName = document.getElementById('signinFirstName').value;
         var signinLastName = document.getElementById('signinLastName').value;
+
+        // Check if passwords match
+        if(password !== confirmPassword) {
+            alert("Passwords do not match.");
+            return; // exit the function if passwords don't match
+        }
+
         console.log(signinEmail, password, signinFirstName, signinLastName);
+
         // Call the loginUser function
         signinUser(signinEmail, password, signinFirstName, signinLastName, elements);
     });
 }
+
 
 
 function signinUser(signinEmail, password, signinFirstName, signinLastName, elements) {

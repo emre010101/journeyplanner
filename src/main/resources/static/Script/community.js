@@ -144,7 +144,7 @@ function createJourneyContainer(journey) {
     // Return the journey container
     return journeyContainer;
 }
-
+/*
 function createNameDateTitle(journey){
     // Create the general information section
     let generalInfo = document.createElement('div');
@@ -163,7 +163,32 @@ function createNameDateTitle(journey){
     user.innerText = journey.userDTO.firstName + ' ' + journey.userDTO.lastName;
     generalInfo.appendChild(user);
     return generalInfo;
+}*/
+function createNameDateTitle(journey){
+    // Create the general information section
+    let generalInfo = document.createElement('div');
+    generalInfo.className = 'general-info';
+    // Add the journey title
+    let title = document.createElement('h2');
+    title.innerText = journey.journeyTitle;
+    generalInfo.appendChild(title);
+    // Add the user info
+    let user = document.createElement('p');
+    user.innerText = journey.userDTO.firstName + ' ' + journey.userDTO.lastName;
+    generalInfo.appendChild(user);
+    // Add the creation date
+    let dateCreated = document.createElement('p');
+    dateCreated.setAttribute('class', 'date');
+    // parse the date string and format
+    let date = new Date(journey.dateCreated);
+    let formattedDate = date.toLocaleDateString(); // you can modify this to change the format
+    dateCreated.innerText = formattedDate;
+
+    generalInfo.appendChild(dateCreated);
+
+    return generalInfo;
 }
+
 function createGeneralJourneyDetails(journey){
     // Create the journey details section
     let journeyDetails = document.createElement('div');
@@ -194,6 +219,7 @@ function createJourneyLegsDetail(journey) {
 
     // Create a button to show/hide the journey details
     let detailsButton = document.createElement('button');
+    detailsButton.className = 'journeyButtons';
     detailsButton.innerText = 'See More Details';
     detailsButton.onclick = function() {
         // Toggle the visibility of the journey details
@@ -281,7 +307,7 @@ function createLikeButton(journey) {
         likeButton.innerHTML = journey.isUserLike ? '❤️' : '🤍';
         likeCount.innerText = likesCount;  // Getting the count
     };
-    likeCount.className = 'like-count';
+    likeCount.className = 'like-count text';
     likeCount.innerText = likesCount;
 
     let likeContainer = document.createElement('div');
@@ -293,6 +319,7 @@ function createLikeButton(journey) {
 
 function createCommentButton(journey) {
     let commentButton = document.createElement('button');
+    commentButton.className = 'journeyButtons';
     commentButton.innerText = 'Comment';
     commentButton.dataset.journeyId = journey.id;  // Store the journey id as a data attribute
     commentButton.onclick = function() {
@@ -316,6 +343,7 @@ function createCommentButton(journey) {
 
 function createDeleteButton(journey) {
     let deleteButton = document.createElement('button');
+    deleteButton.className = 'journeyButtons';
     deleteButton.innerText = 'Delete Journey';
     deleteButton.onclick = function() {
         console.log("Printing in journey delete button: "  + journey.id);
@@ -350,6 +378,7 @@ function createCommentSection(journey) {
     });
 
     let showMoreButton = document.createElement('button');
+    showMoreButton.className = 'journeyButtons';
     showMoreButton.innerText = 'Show Comments';
     showMoreButton.onclick = function() {
         if (allCommentsContainer.style.display === 'none') {
