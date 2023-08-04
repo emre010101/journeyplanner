@@ -1,15 +1,107 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-}
-
-main {
-    margin: 20px;
+#intro {
+    margin: 10px;
 }
 
 iframe {
     margin-top: 20px;
 }
 
+body {
+    margin: 0;
+    background: url('../Images/road.jpg') no-repeat center center fixed;
+    background-size: cover;
+    overflow-x: hidden;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden; /*To avoid cars causing overflow */
+    background-size: cover;
+}
+
+.centered-content {
+    max-width: 800px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.centered-content h1 {
+    color: #333;
+    text-align: center;
+}
+
+.centered-content p, .centered-content ol {
+    color: #333;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/*-----------------------------------------------*/
+.animation-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* hide the cars when they go off-screen */
+}
+#car-animation1, #car-animation2, #car-animation3, #car-animation4 {
+    position: absolute;
+    animation-duration: 10s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+#car-animation1 img, #car-animation2 img, #car-animation3 img, #car-animation4 img {
+    max-width: 100px;
+    max-height: 100px;
+}
+#car-animation1 {
+    left: 10%;
+}
+#car-animation3 {
+    left: 20%;
+}
+
+#car-animation2 {
+    right: 10%;
+}
+#car-animation4 {
+    right: 20%;
+}
+
+#car-animation1 {
+    top: -20%;
+    animation-name: car-animation-top-bottom;
+    animation-delay: 0s;
+}
+
+#car-animation2 {
+    top: 120%;
+    animation-name: car-animation-top-bottom; // Changed to car-animation-top-bottom
+    animation-delay: 3s;
+}
+
+#car-animation3 {
+    top: -40%;
+    animation-name: car-animation-bottom-top; // Changed to car-animation-bottom-top
+    animation-delay: 1.5s;
+}
+
+#car-animation4 {
+    top: 140%;
+    animation-name: car-animation-bottom-top;
+    animation-delay: 4.5s;
+}
+
+
+/* Adjust the keyframes */
+@keyframes car-animation-top-bottom {
+    0% { top: -100%; }
+    100% { top: 100%; }
+}
+
+@keyframes car-animation-bottom-top {
+    0% { top: 100%; }
+    100% { top: -100%; }
+}

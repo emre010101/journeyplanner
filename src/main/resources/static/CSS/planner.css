@@ -3,46 +3,60 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 50px);  /* Adjust this value according to the height of your nav-bar */
-    overflow: hidden;
+    height: calc(100vh - 50px);  /*this value according to the height nav-bar */
 }
 
 #map-and-stops-container {
-    flex-grow: 1;
+    flex: 1;
     display: flex;
+    flex-direction: row;
+    overflow: hidden;
 }
 
 #stops-list {
-    width: 200px;
+    flex: 1;
+    overflow-y: auto; /* Scroll Vertically */
+    width: 140px;
     background-color: #f1f1f1;
     padding: 10px;
-    overflow: auto;
 }
 
 #map {
-    flex-grow: 1;
-    overflow: auto;
+    flex: 2;
+    overflow-y: auto; /* Scroll Vertically */
 }
 
 #calculate {
-    padding: 20px;
-    overflow: auto;
-    height: 100%;
+    flex: 1;
+    overflow-y: auto; /* Scroll Vertically */
+    padding: 10px;
     border-left: 1px solid #ccc;
-    margin-left: 20px;
-    resize: horizontal; /* Allow user to adjust width */
+    margin-left: 10px;
+    resize: horizontal;
     min-width: 20%; /* Minimum width */
 }
 
 #chat-input-area {
+    flex: none;
     display: flex;
     align-items: flex-end;
     width: 100%;
+}
+
+#journey-bar {
+    flex: none;
+    display: flex;
+    flex-wrap: nowrap;  /* Change to nowrap to allow horizontal scroll */
+    gap: 10px;
+    padding: 15px;
+    background-color: #f1f1f1;
+    overflow-x: auto;  /* Add horizontal scroll when content overflows */
 }
 
 #user-input {
@@ -75,15 +89,6 @@ body {
     background-color: #337ab7;
     border-color: #2e6da4;
     text-decoration: none;
-}
-
-#journey-bar {
-    display: flex;
-    flex-wrap: nowrap;  /* Change to nowrap to allow horizontal scroll */
-    gap: 10px;
-    padding: 15px;
-    background-color: #f1f1f1;
-    overflow-x: auto;  /* Add horizontal scroll when content overflows */
 }
 
 .journey-point {

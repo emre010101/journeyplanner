@@ -1,11 +1,21 @@
 <div class="modal-content">
   <span class="close">&times;</span>
+  <h1>Please Login</h1>
   <form id="loginForm">
-    <label for="loginEmail">Username:</label><br>
-    <input type="text" id="loginEmail" name="useremail"><br>
-    <label for="loginPassword">Password:</label><br>
-    <input type="password" id="loginPassword" name="password"><br>
-    <input type="submit" value="Log In">
-    <p><a href="#">Forgot password?</a></p>
+    <div class="form-control">
+      <input type="text" id="loginEmail" name="useremail" required>
+      <label for="loginEmail">Email</label>
+    </div>
+
+    <div class="form-control">
+      <input type="password" id="loginPassword" name="password" required>
+      <label for="loginPassword">Password</label>
+    </div>
+
+    <button class="enterbtn">Login</button>
+
+    <p class="text">Don't have an account?
+      <a href="#" id="registerLink">Register</a>
+    </p>
   </form>
 </div>

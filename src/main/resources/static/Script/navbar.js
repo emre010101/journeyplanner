@@ -75,13 +75,10 @@ function assignButtonAndModals() {
 
 //Event Listeners will be added after they are returned
 function assignEventListeners(elements){
-
     // Handle the login form submission
     handleLoginFormSubmission(elements);
-
     //Handle the sign-in form submission
     handleSignInFormSubmission(elements);
-
     //When the user clicks it, open the modal
     elements.logInButton.onclick = function(){
         console.log("Login is clicked");
@@ -110,6 +107,25 @@ function assignEventListeners(elements){
         elements.signInModal.style.display = "none";
       }
     }
+    //Effects for letters
+    const labels = document.querySelectorAll('.form-control label')
+
+    labels.forEach(label => {
+        label.innerHTML = label.innerText
+            .split('')
+            .map((letter, idx) => `<span style="transition-delay:${idx * 50}ms">${letter}</span>`)
+            .join('')
+    })
+    //Register Button
+    document.getElementById('registerLink').addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent the default action (navigating to the link)
+
+      // Hide the login modal
+      document.getElementById('logInModal').style.display = 'none';
+
+      // Show the sign in modal
+      document.getElementById('signInModal').style.display = 'block';
+    });
 }
 
 
@@ -299,6 +315,7 @@ function logOutUser(elements){
       console.error('Error:', error);
     });
 }
+
 
 
 

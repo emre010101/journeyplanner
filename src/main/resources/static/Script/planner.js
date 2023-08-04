@@ -4,8 +4,6 @@ let map, directionsService, directionsRenderer, geocoder;
 let journeyDetails, createdMapImage, urlToGoGMap;
 // Define the journeyDescription as a global variable
 let journeyDescription = '';
-//For labelling the Stop Points
-let globalCounter = 0;
 // declare global variables for origin and destination
 let globalGeocodedOrigin, globalGeocodedDestination;
 let globalOriginName, globalDestinationName;
@@ -227,15 +225,16 @@ function createUrlForGoogleMap(journeyDetails) {
 async function displayStops(stops) {
     let stopsList = document.getElementById('stops-list');
     stopsList.innerHTML = '';
+    let counterForMarkers = 0;
 
     for (let title in stops) {
         let stopsListContent = `<h2>${title}</h2><ul>`;
 
         for (const stop of stops[title]) {
-            globalCounter++;
+            counterForMarkers++;
             let geocodedAddress = await getGeocodedAddress(stop);
             let stopId = stop.replace(/ /g,'_') + '_' + Date.now();
-            stopsListContent += `<li draggable="true" ondragstart="drag(event)" id="${stopId}" data-stop-number="${globalCounter}" data-geocoded-address="${geocodedAddress}" title="${title}">${globalCounter}. ${stop}</li>`;
+            stopsListContent += `<li draggable="true" ondragstart="drag(event)" id="${stopId}" data-stop-number="${counterForMarkers}" data-geocoded-address="${geocodedAddress}" title="${title}">${counterForMarkers}. ${stop}</li>`;
         }
 
         stopsListContent += '</ul>';

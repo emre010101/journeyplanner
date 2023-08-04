@@ -1,16 +1,27 @@
 <div class="modal-content">
   <span class="close">&times;</span>
+  <h1>Please Sign-in</h1>
   <form id="signinForm">
-    <label for="signinEmail">Email:</label><br>
-    <input type="email" id="signinEmail" name="email"><br>
-    <label for="signinPassword">Password:</label><br>
-    <input type="password" id="signinPassword" name="password"><br>
-    <label for="signinConfirmPassword">Confirm Password:</label><br>
-    <input type="password" id="signinConfirmPassword" name="confirmPassword"><br>
-    <label for="signinFirstName">First Name:</label><br>
-    <input type="text" id="signinFirstName" name="firstname"><br>
-    <label for="signinLastName">Last Name:</label><br>
-    <input type="text" id="signinLastName" name="lastname"><br>
-    <input type="submit" value="Sign In">
+    <div class="form-control">
+      <input type="text" id="signinEmail" required>
+      <label for="signinEmail">Email</label>
+    </div>
+    <div class="form-control">
+      <input type="password" id="signinPassword" name="password" required>
+      <label>Password</label>
+    </div>
+    <div class="form-control">
+      <input type="password" id="signinConfirmPassword" name="confirmPassword" required>
+      <label for="signinConfirmPassword">Confirm Password</label>
+    </div>
+    <div class="form-control">
+      <input type="password" id="signinFirstName" name="firstname" required>
+      <label for="signinFirstName">First Name</label>
+    </div>
+    <div class="form-control">
+      <input type="password" id="signinLastName" name="lastname" required>
+      <label for="signinLastName">Last Name</label>
+    </div>
+    <button class="enterbtn">Sing in</button>
   </form>
 </div>

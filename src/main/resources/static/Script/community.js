@@ -350,7 +350,7 @@ function createCommentSection(journey) {
     });
 
     let showMoreButton = document.createElement('button');
-    showMoreButton.innerText = 'Show More Comments';
+    showMoreButton.innerText = 'Show Comments';
     showMoreButton.onclick = function() {
         if (allCommentsContainer.style.display === 'none') {
             allCommentsContainer.style.display = 'block';

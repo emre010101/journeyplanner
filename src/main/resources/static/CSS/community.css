@@ -1,3 +1,12 @@
+
+body {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    background: url('../Images/road2.jpg') no-repeat center center fixed;
+    background-size: cover;
+    overflow-x: hidden;
+}
+
 #content-area {
     display: flex;
     justify-content: center;
@@ -5,14 +14,12 @@
     flex-wrap: wrap;
     padding: 10px;
     gap: 10px;
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
 }
 
 .journey-container {
+    background-color: #acbfd4;
     width: 80%;
     max-width: 800px;
-    background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 5px;
@@ -61,21 +68,25 @@
 
 
 
-/////////////////////////////////////////////////////
+/*/////////////////////////////////////////////////////*/
 #filter-bar {
-    display: flex;
+    /*display: flex;*/
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #filter-bar input[type="text"] {
-    width: 200px;
+    width: 100px;
+}
+
+.filterField {
+    height: 30px;
 }
 
 .nav-btn {
     padding: 10px;
     margin: 5px;
-    background-color: #4CAF50; /* Green */
+    background-color: rgba(76, 175, 80, 1); /* Green */
     border: none;
     color: white;
     text-align: center;
@@ -84,6 +95,10 @@
     font-size: 16px;
     transition-duration: 0.4s;
     cursor: pointer;
+}
+
+.page-numbers{
+    color: black;
 }
 
 .nav-btn:hover {
@@ -96,7 +111,9 @@
     padding: 10px;
     bottom: 0;
     width: 100%;
-    background-color: #fff;
+   /* background-color: #fff;
+    opacity: 0.9;*/
+    background-color: rgba(255, 255, 255, 0.6);
     margin-top: auto;
 }
 

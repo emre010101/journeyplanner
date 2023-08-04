@@ -10,15 +10,41 @@
 <body>
 <nav id="nav-bar">
 </nav>
-<main>
-    <h1>Welcome to Journey Planner</h1>
-    <p>Instructions about how to use the system...</p>
-    <p>For a more in-depth guide, watch the video tutorial below:</p>
-    <video id="tutorial-video" width="560" height="315" controls>
-        <source src="../video/tutorial.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-</main>
+<div class="container">
+    <div class="animation-container">
+        <div id="car-animation1">
+            <img src="../Images/jeepLeft.png" alt="Car 1">
+        </div>
+        <div id="car-animation2">
+            <img src="../Images/greenCar.png" alt="Car 2">
+        </div>
+        <div id="car-animation3">
+            <img src="../Images/yellowLeft.png" alt="Car 3">
+        </div>
+        <div id="car-animation4">
+            <img src="../Images/redCartoon.png" alt="Car 4">
+        </div>
+    </div>
+    <div id="intro" class="centered-content">
+        <h1>Welcome to Journey Planner</h1>
+        <p>Welcome to your one-stop solution for all your travel planning needs. Before you get started, here are some simple steps on how to use the platform:</p>
+        <ol>
+            <li>Sign up or log in to the system.</li>
+            <li>Go to the Planner page. Here, type in your journey's origin and destination along with what you'd like to see along the way in the chat box.</li>
+            <li>Drag and drop the stop points from the sidebar to the journey bar located below the chat box.</li>
+            <li>Once you've organized your journey, click on 'Calculate' to view the details of your journey.</li>
+            <li>After calculating, you can save your journey and share it with others if you wish. You can also view it on Google Maps for a clearer geographical picture.</li>
+            <li>When you share your journey, you'll be directed to the Community Room, where you'll find your shared journey along with other journeys shared by fellow users.</li>
+            <li>Don't hesitate to comment, ask questions, or like the journeys. Your feedback and engagement contribute to our growing community.</li>
+            <li>We hope you have a great experience using our platform. Happy planning!</li>
+        </ol>
+        <p>For a more in-depth guide, watch the video tutorial below:</p>
+        <video id="tutorial-video" width="560" height="315" controls>
+            <source src="../video/tutorial.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
 
 <!-- Log In Modal -->
 <div id="logInModal" class="modal">

@@ -8,29 +8,30 @@
     <link rel="stylesheet" type="text/css" href="../CSS/community.css">
 </head>
 <body>
+
 <nav id="nav-bar">
 </nav>
 
 <div id="filter-bar">
-    <input type="checkbox" id="my-journey" name="my-journey">
-    <label for="my-journey">My Journeys</label>
+    <input class="filterField"  type="checkbox" id="my-journey" name="my-journey">
+    <label for="my-journey" class="filterField" >My Journeys</label>
 
-    <input type="text" id="origin" placeholder="Origin">
-    <input type="text" id="destination" placeholder="Destination">
+    <input type="text" class="filterField" id="origin" placeholder="Origin">
+    <input type="text" class="filterField"  id="destination" placeholder="Destination">
 
-    <select id="sort-direction">
+    <select class="filterField"  id="sort-direction">
         <option value="desc">Descending</option>
         <option value="asc">Ascending</option>
     </select>
 
-    <select id="page-size">
+    <select class="filterField" id="page-size">
         <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="30">30</option>
     </select>
 
-    <button id="search-btn">Search</button>
+    <button id="search-btn" class="nav-btn search">Search</button>
     <button class="nav-btn pre" id="prev-btn">Previous</button>
     <span class="page-numbers"></span>
     <button class="nav-btn nxt" id="next-btn">Next</button>
@@ -46,7 +47,7 @@
     <button class="nav-btn pre" id="prev-btn-bottom">Previous</button>
     <span class="page-numbers"></span>
     <button class="nav-btn nxt" id="next-btn-bottom">Next</button>
-    <button id="to-top">Go to top</button>
+    <button id="to-top" class="nav-btn top">Go to top</button>
 </div>
 
 
