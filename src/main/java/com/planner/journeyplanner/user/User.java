@@ -1,6 +1,7 @@
 package com.planner.journeyplanner.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planner.journeyplanner.apisLimit.ApiUsage;
 import com.planner.journeyplanner.comment.Comment;
 import com.planner.journeyplanner.journey.Journey;
 import com.planner.journeyplanner.token.Token;
@@ -45,10 +46,13 @@ public class User implements UserDetails {
     @Column(columnDefinition = "VARCHAR(5) default 'USER'")
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ApiUsage> apiUsageList;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference(value="user-journey")
     private List<Journey> journeys;
 
