@@ -18,7 +18,7 @@ public class ApiUsageController {
     @PostMapping("/increment/map")
     public ResponseEntity<ApiUsageDTO> incrementCounter() {
         ApiUsageDTO apiUsageDTO = apiUsageService.incrementApiCount(Type.MAP);
-        if (!apiUsageDTO.getRunOut()) {
+        if (!apiUsageDTO.getRunOutMap()) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
         } else {
             return ResponseEntity.ok().body(apiUsageDTO);

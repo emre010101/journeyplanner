@@ -15,14 +15,16 @@ public class ApiUsageDTO {
     private Role userType;
     private int gptApiCount;
     private int mapApiCount;
-    private Boolean runOut;
+    private Boolean runOutGpt;
+    private Boolean runOutMap;
 
     public ApiUsageDTO(ApiUsage apiUsage, Role userType){
         this.id = apiUsage.getId();
         this.userType = userType;
         this.gptApiCount = apiUsage.getGptApiCount();
         this.mapApiCount = apiUsage.getMapApiCount();
-        this.runOut = apiUsage.getRunOut();
+        this.runOutGpt = apiUsage.getRunOutGpt();
+        this.runOutMap = apiUsage.getRunOutMap();
     }
 
 }

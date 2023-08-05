@@ -11,6 +11,12 @@ let globalOriginName, globalDestinationName;
 async function handleButtonClick() {
     console.log("Handling the user click");
     const userInput = document.getElementById('user-input').value;
+    let runOutGpt = localStorage.getItem('runOutGpt') === 'true';
+    console.log("Run out: "  + runOutGpt);
+    if (runOutGpt) {
+      alert('GPT usage limit has been reached. You cannot calculate the route at this time.');
+      return; // Exit the function
+    }
     const data = await fetchData(userInput);
     document.getElementById('calculate-button').style.display = 'block';
     processText(data);
@@ -396,6 +402,20 @@ function swapNodes(node1, node2) {
 
 
 function calculateRoute() {
+  // Increment map counter and handle response
+  incrementMapCounter().then(apiUsageDTO => {
+    if (apiUsageDTO) {
+      if (apiUsageDTO.runOutMap) {
+        // Display an alert if the limit is reached
+        alert('Map usage limit has been reached. You cannot calculate the route at this time.');
+        return; // Exit the function
+      }
+
+      console.log('Map counter incremented successfully');
+    }
+  }).catch(error => {
+    console.error('An error occurred while incrementing map counter', error);
+  });
     var journeyPoints = Array.from(document.getElementById('journey-bar').children);
     var route = journeyPoints.map(point => point.innerText);
     console.log('Calculating the route with the following stops: ', route);
@@ -566,4 +586,31 @@ function createStaticMapUrl(journeyDetails) {
             handleButtonClick();
         }
     });
+
+
+function incrementMapCounter() {
+  const url = 'http://localhost:8082/api/jp/usage/increment/map';
+  const token = localStorage.getItem('accessToken');
+
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(res => {
+    // Update local storage if the response is ok
+    localStorage.setItem('userRole', res.userRole);
+    localStorage.setItem('gptApiCount', res.gptApiCount);
+    localStorage.setItem('mapApiCount', res.mapApiCount);
+    return res;
+  });
+}
 

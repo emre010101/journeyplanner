@@ -15,6 +15,13 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/*
+* date: 04/08/2023
+* author: Emre Kavak
+* LocationServiceTest.class
+* This class designed to test if the findByName works as it's expected.
+* */
+
 @ExtendWith(MockitoExtension.class)
 class LocationServiceTest {
 
@@ -25,24 +32,24 @@ class LocationServiceTest {
     private LocationService locationService;
 
     @Test
-    void findByName_found() throws ResourceNotFoundException {
+    void findByName_found()  {
         String locationName = "Galway";
         Location expectedLocation = new Location();
-        when(locationRepository.findByName(locationName)).thenReturn(Optional.of(expectedLocation));
+        when(locationRepository.findByNameIgnoreCase(locationName)).thenReturn(Optional.of(expectedLocation));
 
-        Location actualLocation = locationService.findByName(locationName);
+        Optional<Location> actualLocation = locationService.findByName(locationName);
 
-
-        assertEquals(expectedLocation, actualLocation);
+        assertTrue(actualLocation.isPresent());
+        assertEquals(expectedLocation, actualLocation.get());
     }
 
     @Test
     void findByName_notFound() {
         String locationName = "NonexistentLocation";
-        when(locationRepository.findByName(locationName)).thenReturn(Optional.empty());
+        when(locationRepository.findByNameIgnoreCase(locationName)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> locationService.findByName(locationName));
+        Optional<Location> actualLocation = locationService.findByName(locationName);
+
+        assertFalse(actualLocation.isPresent());
     }
-
-    // Add similar tests for the other methods in LocationService
 }

@@ -33,7 +33,9 @@ public class ApiUsageService {
                     .usageDate(currentDate)
                     .gptApiCount(type == Type.GPT ? 1 : 0)
                     .mapApiCount(type == Type.GPT ? 0 : 1)
-                    .runOut(false).build();
+                    .runOutGpt(false)
+                    .runOutMap(false)
+                    .build();
         } else {
             apiUsage = optionalApiUsage.get();
             System.out.println("The role: " + apiUsage.getUser().getRole());
@@ -43,16 +45,27 @@ public class ApiUsageService {
             } else {
                 apiUsage.setMapApiCount(apiUsage.getMapApiCount() + 1);
             }
-
-            // Check if the user role is "USER" and a specific count has been reached
-            if (user.getRole() == Role.USER && (apiUsage.getGptApiCount() >= 5 || apiUsage.getMapApiCount() >= 5)) {
-                apiUsage.setRunOut(true);
-                apiUsage = apiUsageRepository.save(apiUsage); // Update the record with the new "runOut" value
+            // Check if the user role is "USER" and the GPT or map count has been reached
+            if (user.getRole() == Role.USER) {
+                if (apiUsage.getGptApiCount() >= 5) {
+                    apiUsage.setRunOutGpt(true);
+                } else {
+                    apiUsage.setRunOutGpt(false);
+                }
+                if (apiUsage.getMapApiCount() >= 5) {
+                    apiUsage.setRunOutMap(true);
+                } else {
+                    apiUsage.setRunOutMap(false);
+                }
+            } else { // If the user role is not "USER" (ADMIN), set both fields to false
+                apiUsage.setRunOutGpt(false);
+                apiUsage.setRunOutMap(false);
             }
         }
         apiUsageRepository.save(apiUsage);
         return new ApiUsageDTO(apiUsage, user.getRole());
     }
+
 
     public ApiUsageDTO getTodayApiUsage() {
         User user = authenticationService.getAuthenticatedUser();
@@ -68,21 +81,34 @@ public class ApiUsageService {
                     .usageDate(currentDate)
                     .gptApiCount(0)
                     .mapApiCount(0)
-                    .runOut(false) // Initialize with false
+                    .runOutGpt(false) // Initialize with false
+                    .runOutMap(false)
                     .build();
-            apiUsage = apiUsageRepository.save(apiUsage);
         } else {
             apiUsage = optionalApiUsage.get();
-        }
 
-        // Check if the user role is "USER" and a specific count has been reached
-        if (user.getRole() == Role.USER && (apiUsage.getGptApiCount() >= 5 || apiUsage.getMapApiCount() >= 5)) {
-            apiUsage.setRunOut(true);
-            apiUsage = apiUsageRepository.save(apiUsage); // Update the record with the new "runOut" value
+            // Check if the user role is "USER" and the GPT or map count has been reached
+            if (user.getRole() == Role.USER) {
+                if (apiUsage.getGptApiCount() >= 5) {
+                    apiUsage.setRunOutGpt(true);
+                } else {
+                    apiUsage.setRunOutGpt(false);
+                }
+                if (apiUsage.getMapApiCount() >= 5) {
+                    apiUsage.setRunOutMap(true);
+                } else {
+                    apiUsage.setRunOutMap(false);
+                }
+            } else { // If the user role is not "USER" (ADMIN), set both fields to false
+                apiUsage.setRunOutGpt(false);
+                apiUsage.setRunOutMap(false);
+            }
         }
-
+        apiUsageRepository.save(apiUsage);
         return new ApiUsageDTO(apiUsage, user.getRole());
     }
+
+
 
 
     public ApiUsageDTO toDTO(ApiUsage apiUsage){

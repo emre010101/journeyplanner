@@ -34,8 +34,11 @@ public class ApiUsage {
     @Column(name = "map_api_counter")
     private int mapApiCount;
 
-    @Column(name = "run_out")
-    private Boolean runOut;
+    @Column(name = "run_out_gpt")
+    private Boolean runOutGpt;
+
+    @Column(name = "run_out_map")
+    private Boolean runOutMap;
 
     @JsonIgnore
     @Column(name = "usage_date")

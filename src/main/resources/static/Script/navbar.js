@@ -55,7 +55,7 @@ function loadComponent(elementId, componentPath) {
 
 function assignButtonAndModals() {
     //Declare your variables here
-    var logInModal, signInModal, logInButton, signInButton, closeButtons;
+    var logInModal, signInModal, logInButton, signInButton, closeButtons, userRole, gptUsage, mapUsage;
 
     //Get the modals
     logInModal = document.getElementById("logInModal");
@@ -69,8 +69,13 @@ function assignButtonAndModals() {
     //Get the <span> elements that closes the modals
     closeButtons = document.getElementsByClassName("close");
 
+    //get the usage infos
+    userRole = document.getElementById("role");
+    gptUsage = document.getElementById("gpt-usage");
+    mapUsage = document.getElementById("map-usage");
+
     //Return the variables as an object
-    return {logInModal, signInModal, logInButton, signInButton, logOutButton, closeButtons};
+    return {logInModal, signInModal, logInButton, signInButton, logOutButton, closeButtons, userRole, gptUsage, mapUsage};
 }
 
 //Event Listeners will be added after they are returned
@@ -277,7 +282,7 @@ function setPageState(loggedInUser, elements) {
     var plannerLink = document.getElementById('plannerLink');
     var communityLink = document.getElementById('communityLink');
 
-    if (!elements.signInButton || !elements.logInButton || !logOutButton || !userGreeting) {
+    if (!elements.signInButton || !elements.logInButton || !logOutButton || !userGreeting || !elements.userRole || !elements.gptUsage || !elements.mapUsage) {
         console.error('One or more elements are missing.');
         return;
     }
@@ -289,6 +294,18 @@ function setPageState(loggedInUser, elements) {
         plannerLink.style.display = 'inline-block';
         communityLink.style.display = 'inline-block';
         userGreeting.textContent = 'Welcome, ' + loggedInUser;
+
+        // Call the getTodayApiUsage function if the user is logged in
+        getTodayApiUsage()
+            .then(apiUsageDTO => {
+                elements.userRole.innerText = apiUsageDTO.userType === 'ADMIN' ? 'ADMIN' : 'USER';
+                elements.gptUsage.innerText = "GptUsage: " + apiUsageDTO.gptApiCount + (apiUsageDTO.userType === 'ADMIN' ? "/LIMITLESS" : "/50");
+                elements.mapUsage.innerText = "MapUsage: " + apiUsageDTO.mapApiCount + (apiUsageDTO.userType === 'ADMIN' ? "/LIMITLESS" : "/50");
+            })
+            .catch(error => {
+                console.error('Error fetching API usage:', error);
+            });
+
     } else {
         logOutButton.style.display = 'none';
         elements.signInButton.style.display = 'inline-block';
@@ -296,7 +313,6 @@ function setPageState(loggedInUser, elements) {
         userGreeting.textContent = '';
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////
 
@@ -319,12 +335,52 @@ function logOutUser(elements){
       localStorage.removeItem('accessToken');
       localStorage.removeItem('loggedInUser');
       localStorage.removeItem('searchParams');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('gptApiCount');
+      localStorage.removeItem('mapApiCount');
+      localStorage.removeItem('runOutGpt');
+      localStorage.removeItem('runOutMap');
       setPageState(loggedInUser, elements)
     })
     .catch((error) => {
       console.error('Error:', error);
     });
 }
+
+//Get the api usage
+// Get the api usage
+function getTodayApiUsage() {
+  const url = 'http://localhost:8082/api/jp/usage/today';
+  const token = localStorage.getItem('accessToken');
+
+  return fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(res => {
+    console.log(res);
+
+    // Storing the API usage data in the local storage
+    localStorage.setItem('userRole', res.userRole);
+    localStorage.setItem('gptApiCount', res.gptApiCount);
+    localStorage.setItem('mapApiCount', res.mapApiCount);
+    localStorage.setItem('runOutGpt', res.runOutGpt);
+    localStorage.setItem('runOutMap', res.runOutMap);
+
+    return res; // Returns the ApiUsageDTO object
+  });
+}
+
+
 
 
 
