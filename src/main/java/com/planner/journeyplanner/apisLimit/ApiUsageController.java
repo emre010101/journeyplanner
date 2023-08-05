@@ -16,19 +16,19 @@ public class ApiUsageController {
     private final ApiUsageService apiUsageService;
 
     @PostMapping("/increment/map")
-    public ResponseEntity<ApiUsage> incrementCounter() {
-        ApiUsage apiUsage = apiUsageService.incrementApiCount(Type.MAP);
-        if (!apiUsage.getRunOut()) {
+    public ResponseEntity<ApiUsageDTO> incrementCounter() {
+        ApiUsageDTO apiUsageDTO = apiUsageService.incrementApiCount(Type.MAP);
+        if (!apiUsageDTO.getRunOut()) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
         } else {
-            return ResponseEntity.ok().body(apiUsage);
+            return ResponseEntity.ok().body(apiUsageDTO);
         }
     }
 
     @GetMapping("/today")
-    public ResponseEntity<ApiUsage> getTodayApiUsage() {
-        ApiUsage apiUsage = apiUsageService.getTodayApiUsage();
-        return ResponseEntity.ok(apiUsage);
+    public ResponseEntity<ApiUsageDTO> getTodayApiUsage() {
+        ApiUsageDTO apiUsageDTO = apiUsageService.getTodayApiUsage();
+        return ResponseEntity.ok(apiUsageDTO);
     }
 
 }

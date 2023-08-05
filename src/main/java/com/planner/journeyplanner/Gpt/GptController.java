@@ -35,8 +35,9 @@ public class GptController {
         System.out.println("Received message in JourneyController: " + message);
         //
         User currentUser = authenticationService.getAuthenticatedUser(); //Getting the current user who is making the call
+        System.out.println("The role: " + currentUser.getRole());
         Boolean runOut = apiUsageService.incrementApiCount(Type.GPT).getRunOut();
-        if (!runOut) {
+        if (runOut) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Request limit exceeded");
         }
         //

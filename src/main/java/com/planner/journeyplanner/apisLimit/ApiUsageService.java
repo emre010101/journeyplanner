@@ -1,6 +1,7 @@
 package com.planner.journeyplanner.apisLimit;
 
 import com.planner.journeyplanner.auth.AuthenticationService;
+import com.planner.journeyplanner.user.Role;
 import com.planner.journeyplanner.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,20 +21,22 @@ public class ApiUsageService {
     private final ApiUsageRepository apiUsageRepository;
     private final AuthenticationService authenticationService;
 
-    public ApiUsage incrementApiCount(Type type) {
+    public ApiUsageDTO incrementApiCount(Type type) {
         User user = authenticationService.getAuthenticatedUser();
         LocalDate currentDate = LocalDate.now();
         Optional<ApiUsage> optionalApiUsage = apiUsageRepository.findByUserAndUsageDate(user, currentDate);
         ApiUsage apiUsage;
         if (!optionalApiUsage.isPresent()) {
-            apiUsage = new ApiUsage();
-            apiUsage.setUser(user);
-            apiUsage.setUsageDate(currentDate);
-            apiUsage.setGptApiCount(type == Type.GPT ? 1 : 0);
-            apiUsage.setMapApiCount(type == Type.GPT ? 0 : 1);
-            apiUsage.setRunOut(false);
+            apiUsage = ApiUsage
+                    .builder()
+                    .user(user)
+                    .usageDate(currentDate)
+                    .gptApiCount(type == Type.GPT ? 1 : 0)
+                    .mapApiCount(type == Type.GPT ? 0 : 1)
+                    .runOut(false).build();
         } else {
             apiUsage = optionalApiUsage.get();
+            System.out.println("The role: " + apiUsage.getUser().getRole());
 
             if (type == Type.GPT) {
                 apiUsage.setGptApiCount(apiUsage.getGptApiCount() + 1);
@@ -41,14 +44,17 @@ public class ApiUsageService {
                 apiUsage.setMapApiCount(apiUsage.getMapApiCount() + 1);
             }
 
-            if ((apiUsage.getGptApiCount() >= 5 || apiUsage.getMapApiCount() >= 5) && !user.getRole().equals("ADMIN")) {
+            // Check if the user role is "USER" and a specific count has been reached
+            if (user.getRole() == Role.USER && (apiUsage.getGptApiCount() >= 5 || apiUsage.getMapApiCount() >= 5)) {
                 apiUsage.setRunOut(true);
+                apiUsage = apiUsageRepository.save(apiUsage); // Update the record with the new "runOut" value
             }
         }
-        return apiUsageRepository.save(apiUsage);
+        apiUsageRepository.save(apiUsage);
+        return new ApiUsageDTO(apiUsage, user.getRole());
     }
 
-    public ApiUsage getTodayApiUsage() {
+    public ApiUsageDTO getTodayApiUsage() {
         User user = authenticationService.getAuthenticatedUser();
         LocalDate currentDate = LocalDate.now();
 
@@ -56,19 +62,33 @@ public class ApiUsageService {
         ApiUsage apiUsage;
 
         if (!optionalApiUsage.isPresent()) {
-            apiUsage = new ApiUsage();
-            apiUsage.setUser(user);
-            apiUsage.setUsageDate(currentDate);
-            apiUsage.setGptApiCount(0);
-            apiUsage.setMapApiCount(0);
+            apiUsage = ApiUsage
+                    .builder()
+                    .user(user)
+                    .usageDate(currentDate)
+                    .gptApiCount(0)
+                    .mapApiCount(0)
+                    .runOut(false) // Initialize with false
+                    .build();
             apiUsage = apiUsageRepository.save(apiUsage);
         } else {
             apiUsage = optionalApiUsage.get();
         }
 
-        return apiUsage;
+        // Check if the user role is "USER" and a specific count has been reached
+        if (user.getRole() == Role.USER && (apiUsage.getGptApiCount() >= 5 || apiUsage.getMapApiCount() >= 5)) {
+            apiUsage.setRunOut(true);
+            apiUsage = apiUsageRepository.save(apiUsage); // Update the record with the new "runOut" value
+        }
+
+        return new ApiUsageDTO(apiUsage, user.getRole());
     }
 
+
+    public ApiUsageDTO toDTO(ApiUsage apiUsage){
+        User user = authenticationService.getAuthenticatedUser();
+        return new ApiUsageDTO(apiUsage, user.getRole());
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.planner.journeyplanner.apisLimit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.planner.journeyplanner.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class ApiUsage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -35,6 +37,7 @@ public class ApiUsage {
     @Column(name = "run_out")
     private Boolean runOut;
 
+    @JsonIgnore
     @Column(name = "usage_date")
     @Temporal(TemporalType.DATE)
     private LocalDate usageDate;
