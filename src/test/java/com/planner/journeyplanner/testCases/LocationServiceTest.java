@@ -1,6 +1,5 @@
 package com.planner.journeyplanner.testCases;
 
-import com.planner.journeyplanner.exception.ResourceNotFoundException;
 import com.planner.journeyplanner.location.Location;
 import com.planner.journeyplanner.location.LocationRepository;
 import com.planner.journeyplanner.location.LocationService;

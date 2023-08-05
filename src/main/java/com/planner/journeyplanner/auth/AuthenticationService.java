@@ -79,14 +79,12 @@ public class AuthenticationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Fetch the user from the database using the email/username (assuming you have a findByEmail method in your UserRepository).
+        // Fetch the user from the database using the email/username
         Optional<User> userOptional = repository.findByEmail(userDetails.getUsername());
 
         if (!userOptional.isPresent()) {
-            // Throw an exception or handle this case as you see fit
             throw new UsernameNotFoundException("User not found with username: " + userDetails.getUsername());
         }
-
         return userOptional.get();
     }
 

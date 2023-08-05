@@ -1,58 +1,88 @@
 package com.planner.journeyplanner.testCases;
+import com.planner.journeyplanner.auth.AuthenticationService;
+import com.planner.journeyplanner.user.Role;
+import com.planner.journeyplanner.user.User;
+import com.planner.journeyplanner.user.UserRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.Optional;
 
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+/*
+ * author: Emre Kavak
+ * date: 05/08/2023#
+ * AuthenticationServiceTest.class
+ * This class designed to test if the application can get the logged-in user details from the security context holder
+ * which play crucial role in the system design.
+ * */
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private TokenRepository tokenRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private JwtService jwtService;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
     @InjectMocks
     private AuthenticationService authenticationService;
 
+
     @Test
-    void register_newUser_success() {
-        // Prepare input request
-        RegisterRequest request = new RegisterRequest("John", "Doe", "john@example.com", "password");
+    void getAuthenticatedUser_userFound_success() {
+        // Prepare user details
+        String username = "john@example.com";
+        User user = new User();
+        user.setEmail(username);
+        UserDetails userDetails = User.builder().email(username).password("password").role(Role.USER).build();
 
-        // Prepare a user object
-        User user = User.builder()
-                .firstname("John")
-                .lastname("Doe")
-                .email("john@example.com")
-                .password("password")
-                .role(Role.USER)
-                .build();
+        // Set up the authentication context
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Mock dependencies
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(jwtService.generateToken(user)).thenReturn("jwtToken");
-        when(jwtService.generateRefreshToken(user)).thenReturn("refreshToken");
+        // Mock the repository behavior
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
 
         // Call the method
-        AuthenticationResponse response = authenticationService.register(request);
+        User authenticatedUser = authenticationService.getAuthenticatedUser();
 
-        // Verify the results
-        assertNotNull(response);
-        assertEquals("jwtToken", response.getAccessToken());
-        assertEquals("refreshToken", response.getRefreshToken());
+        // Verify the result
+        assertNotNull(authenticatedUser);
+        assertEquals(username, authenticatedUser.getEmail());
 
-        // Optionally, verify the interactions with the dependencies
-        verify(userRepository).save(any(User.class));
-        verify(passwordEncoder).encode(request.getPassword());
-        verify(jwtService).generateToken(user);
-        verify(jwtService).generateRefreshToken(user);
+        // Clear the authentication context for other tests
+        SecurityContextHolder.clearContext();
     }
+
+    @Test
+    void getAuthenticatedUser_userNotFound_throwsException() {
+        // Prepare user details
+        String username = "john@example.com";
+        UserDetails userDetails = User.builder().email(username).password("password").role(Role.USER).build();
+
+        // Set up the authentication context
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Mock the repository behavior
+        when(userRepository.findByEmail(username)).thenReturn(Optional.empty());
+
+        // Expect an exception
+        assertThrows(UsernameNotFoundException.class, () -> {
+            authenticationService.getAuthenticatedUser();
+        });
+
+        // Clear the authentication context for other tests
+        SecurityContextHolder.clearContext();
+    }
+
+
+
 }
