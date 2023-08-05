@@ -17,7 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
 public class GptApiServiceTest {
@@ -25,15 +28,12 @@ public class GptApiServiceTest {
     @Mock
     private HttpService httpService;
 
-    @Mock
-    private AppConfig config;
-
     @InjectMocks
     private GptApiService gptApiService;
 
     @BeforeEach
     public void setup() {
-        when(config.getProperty("CHATGPT_API_KEY")).thenReturn("your-api-key");
+        ReflectionTestUtils.setField(gptApiService, "apiKeyTemp", "your-api-key");
     }
 
     @Test
