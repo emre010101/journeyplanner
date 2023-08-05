@@ -5,6 +5,7 @@ import com.planner.journeyplanner.exception.BadRequestException;
 import com.planner.journeyplanner.exception.UnauthorizedException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -27,13 +28,21 @@ public class GptApiService {
 
     @Autowired
     private AppConfig config;
+    @Value("${CHATGPT_API_KEY}")
+    private String apiKeyTemp;
 
     private static String API_KEY;
 
     @PostConstruct
     public void init() {
-        API_KEY = config.getProperty("CHATGPT_API_KEY");
+        API_KEY = apiKeyTemp;
     }
+
+    /*
+    @PostConstruct
+    public void init() {
+        API_KEY = config.getProperty("CHATGPT_API_KEY");
+    }*/
 
     public String sendRequest(String text) throws IOException, BadRequestException, UnauthorizedException {
         System.out.println("TESTING PURPOSE IN GPTAPISERVICE");

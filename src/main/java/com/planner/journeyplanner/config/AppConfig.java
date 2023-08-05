@@ -56,7 +56,7 @@ public class AppConfig {
     private Properties props;
 
     //This method will be called after spring loading completes
-    @PostConstruct
+    /*@PostConstruct
     public void init() {
         Resource resource = new ClassPathResource("keys.env");
         System.out.println("init is called");
@@ -65,9 +65,9 @@ public class AppConfig {
         } catch (IOException e) {
             // Handle the exception
         }
-    }
-
+    }*/
+/*
     public String getProperty(String key) {
         return props.getProperty(key);
-    }
+    }*/
 }

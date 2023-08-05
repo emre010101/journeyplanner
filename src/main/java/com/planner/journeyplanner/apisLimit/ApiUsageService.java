@@ -89,12 +89,12 @@ public class ApiUsageService {
 
             // Check if the user role is "USER" and the GPT or map count has been reached
             if (user.getRole() == Role.USER) {
-                if (apiUsage.getGptApiCount() >= 5) {
+                if (apiUsage.getGptApiCount() >= 50) {
                     apiUsage.setRunOutGpt(true);
                 } else {
                     apiUsage.setRunOutGpt(false);
                 }
-                if (apiUsage.getMapApiCount() >= 5) {
+                if (apiUsage.getMapApiCount() >= 50) {
                     apiUsage.setRunOutMap(true);
                 } else {
                     apiUsage.setRunOutMap(false);
