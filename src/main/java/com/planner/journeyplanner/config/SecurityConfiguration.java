@@ -65,7 +65,7 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://127.0.0.1:5500",
                 "http://localhost:63342",
-                "http://another-allowed-origin.com"
+                "https://brave-mud-0e8777c03.3.azurestaticapps.net"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
