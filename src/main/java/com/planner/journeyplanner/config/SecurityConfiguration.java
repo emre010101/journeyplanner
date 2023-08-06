@@ -64,6 +64,7 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://127.0.0.1:5500",
+                "http://127.0.0.1:5501",
                 "http://localhost:63342",
                 "https://brave-mud-0e8777c03.3.azurestaticapps.net"
         ));
