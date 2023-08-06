@@ -5,13 +5,10 @@ var loggedInUser = null; //'emre.kavak3938@gmail.com'
 //Adding window event listener to load external html components and other functionalities
 window.addEventListener("load", function() {
     console.log("Testing");
-    // Determine the relative path to the components based on the current location
-    var relativePathToComponents = window.location.pathname.includes('pages') ? './' : './pages/';
-
-    Promise.all([
-        loadComponent('nav-bar', relativePathToComponents + 'navbar.html'),
-        loadComponent('logInModal', relativePathToComponents + 'loginModal.html'),
-        loadComponent('signInModal', relativePathToComponents + 'signinModal.html')
+    Promise.all([ //Waiting to load the other components
+        loadComponent('nav-bar', '../pages/navbar.html'),
+        loadComponent('logInModal', 'loginModal.html'),
+        loadComponent('signInModal', 'signinModal.html')
     ])
     .then(() => {
 
@@ -35,16 +32,6 @@ window.addEventListener("load", function() {
         console.error("Error: ", error);
     });
 });
-
-/*
-
-
-        Promise.all([ //Waiting to load the other components
-            loadComponent('nav-bar', './pages/navbar.html'),
-            loadComponent('logInModal', './pages/loginModal.html'),
-            loadComponent('signInModal', './pages/signinModal.html')
-        ])
-*/
 
 //Loading the other html elements dynamically
 function loadComponent(elementId, componentPath) {
@@ -174,7 +161,7 @@ function loginUser(loginEmail, password, elements) {
     };
 
     // Send POST request to /login
-    return fetch('http://localhost:8082/api/jp/auth/authenticate', {
+    return fetch('https://journey-planner.azurewebsites.net/api/jp/auth/authenticate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -251,7 +238,7 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName, elem
     };
 
     // Send POST request to /login
-    return fetch('http://localhost:8082/api/jp/auth/register', {
+    return fetch('https://journey-planner.azurewebsites.net/api/jp/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -332,7 +319,7 @@ function setPageState(loggedInUser, elements) {
 
 function logOutUser(elements){
 
-    fetch('http://localhost:8082/api/jp/auth/logout', {
+    fetch('https://journey-planner.azurewebsites.net/api/jp/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -363,7 +350,7 @@ function logOutUser(elements){
 //Get the api usage
 // Get the api usage
 function getTodayApiUsage() {
-  const url = 'http://localhost:8082/api/jp/usage/today';
+  const url = 'https://journey-planner.azurewebsites.net/api/jp/usage/today';
   const token = localStorage.getItem('accessToken');
 
   return fetch(url, {
