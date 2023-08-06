@@ -24,7 +24,7 @@ async function handleButtonClick() {
 
 async function fetchData(userInput) {
     try {
-        const response = await fetch('http://localhost:8082/api/jp/gpt/analyze', {
+        const response = await fetch('https://journey-planner.azurewebsites.net/api/jp/gpt/analyze', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -528,7 +528,7 @@ async function sentJourneyToServer() {
     };
 
     try {
-        const response = await fetch('http://localhost:8082/api/jp/journey/create', {
+        const response = await fetch('https://journey-planner.azurewebsites.net/api/jp/journey/create', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -589,7 +589,7 @@ function createStaticMapUrl(journeyDetails) {
 
 
 function incrementMapCounter() {
-  const url = 'http://localhost:8082/api/jp/usage/increment/map';
+  const url = 'https://journey-planner.azurewebsites.net/api/jp/usage/increment/map';
   const token = localStorage.getItem('accessToken');
 
   return fetch(url, {
