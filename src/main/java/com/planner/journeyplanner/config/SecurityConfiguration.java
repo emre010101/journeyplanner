@@ -67,7 +67,8 @@ public class SecurityConfiguration {
                 "http://127.0.0.1:5501",
                 "http://127.0.0.1:5502",
                 "http://localhost:63342",
-                "https://brave-mud-0e8777c03.3.azurestaticapps.net"
+                "https://emre010101.github.io/journeyplannerfront/",
+                "https://polite-river-0dc0e4003.3.azurestaticapps.net"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
