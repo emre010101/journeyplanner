@@ -12,8 +12,8 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-
     public Location updateLocation(Location location, Boolean increase) {
+        System.out.println("Updating the location: " + "Increase: " + increase);
         if(increase){
             location.setCount(location.getCount() + 1);
         }else{
@@ -37,15 +37,15 @@ public class LocationService {
         }
     }
 
-
-
     public Optional<Location> findByName(String locationName)  {
         return (Optional<Location> ) locationRepository.findByNameIgnoreCase(locationName);
     }
 
     public void deleteLocation(Location location) {
+        System.out.println("Deleteing the location named: " + location.getName());
         try {
             if(location.getCount() <= 1){
+                System.out.println("Deleting the location be cause it's only one count");
                 locationRepository.delete(location);
             }else{
                 updateLocation(location, false);

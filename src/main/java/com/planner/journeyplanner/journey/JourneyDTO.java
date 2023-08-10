@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class JourneyDTO {
     private Long id;
     private String journeyTitle;
@@ -26,13 +26,11 @@ public class JourneyDTO {
     private LocalDateTime dateCreated;
     private String description;
     private UserDTO userDTO;
-    //private List<LikeDTO> likeDTO;
     private Long likesCount;
     private Boolean isUserLike;
     private List<CommentDTO> comments;
     private Long commentsCount;
     private boolean isUserJourney;
-
     public JourneyDTO(Journey journey, Boolean isUserLike, Long likesCount, List<CommentDTO> comments, Long commentsCount, Long userId) {
         this.id = journey.getId();
         this.journeyTitle = journey.getJourneyTitle();
@@ -43,7 +41,6 @@ public class JourneyDTO {
         this.description = journey.getDescription();
         this.userDTO = new UserDTO(journey.getUser());
         this.isUserLike = isUserLike;
-        //this.likeDTO = likeDTO;
         this.likesCount = likesCount;
         this.comments = comments;
         this.commentsCount = commentsCount;

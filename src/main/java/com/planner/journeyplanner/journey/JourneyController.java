@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -28,7 +29,6 @@ public class JourneyController {
 
     private final JourneyService journeyService;
 
-
     @PostMapping("/create")
     public ResponseEntity<Void> journey(
             @RequestBody Journey journey
@@ -38,8 +38,6 @@ public class JourneyController {
         Journey savedJourney = journeyService.save(journey);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
     @GetMapping("/getJourneys")
     public ResponseEntity<Page<JourneyDTO>> getJourneysWithLikesAndComments(
             @RequestParam(defaultValue = "false") Boolean onlyUserJourneys,
@@ -52,7 +50,6 @@ public class JourneyController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(direction), sortBy);
         Page<JourneyDTO> journeyPage = journeyService.getJourneys(pageable, origin, destination, onlyUserJourneys);
-
         return ResponseEntity.ok(journeyPage);
     }
 

@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -119,28 +121,40 @@ public class JourneyService {
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
+    @Transactional
     public void deleteJourney(Long id) throws ResourceNotFoundException, UnauthorizedAccessException {
         User user = authenticationService.getAuthenticatedUser();
         Journey journey = journeyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Journey with id " + id + " not found"));
 
         if (!Objects.equals(journey.getUser().getId(), user.getId())) {
-            throw new UnauthorizedAccessException("User is not authorized to delete this comment");
+            throw new UnauthorizedAccessException("User is not authorized to delete this journey");
         }
-        //Firstly, save the locations
-        Location origin = journey.getOrigin();
-        Location destination = journey.getDestination();
-        //Secondly, set the origin and destination to null then save it in the database
+
+        // Decrease the count of the origin and destination locations (or delete if count <= 1).
+        if(journey.getOrigin() != null){
+            locationService.deleteLocation(journey.getOrigin());
+        }else{
+            System.out.println("The origin was null");
+        }
+
+        if(journey.getDestination() != null){
+            locationService.deleteLocation(journey.getDestination());
+        }else{
+            System.out.println("The destination was null");
+        }
+
+        // Disconnect the journey from its origin and destination.
         journey.setOrigin(null);
         journey.setDestination(null);
-        journeyRepository.save(journey);
-        //Delete the locations in the database
-        locationService.deleteLocation(origin);
-        locationService.deleteLocation(destination);
-        //Delete comments and likes associated with it
-        likeService.deleteByJourney(journey);
+        journeyRepository.save(journey); // Save the journey with nullified origin and destination.
+
+        // Delete comments and likes associated with the journey.
         commentService.deleteByJourney(journey);
-        //Lastly delete the journey
+        likeService.deleteByJourney(journey);
+
+        // Delete the journey itself.
         journeyRepository.delete(journey);
     }
+
 }

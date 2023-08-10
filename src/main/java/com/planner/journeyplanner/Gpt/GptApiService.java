@@ -20,30 +20,24 @@ import java.net.HttpURLConnection;
  * GptApiService.java
  * This class is specifically tailored to communicate with the OpenAI GPT API.
 * */
-@Service
-public class GptApiService {
-
-    @Autowired
-    private HttpService httpService;
-
-    @Autowired
-    private AppConfig config;
-    @Value("${CHATGPT_API_KEY}")
-    private String apiKeyTemp;
-
-    private static String API_KEY;
-
-    @PostConstruct
-    public void init() {
-        API_KEY = apiKeyTemp;
-    }
-
     /*
     @PostConstruct
     public void init() {
         API_KEY = config.getProperty("CHATGPT_API_KEY");
     }*/
-
+@Service
+public class GptApiService {
+    @Autowired
+    private HttpService httpService;
+    @Autowired
+    private AppConfig config;
+    @Value("${CHATGPT_API_KEY}")
+    private String apiKeyTemp;
+    private static String API_KEY;
+    @PostConstruct
+    public void init() {
+        API_KEY = apiKeyTemp;
+    }
     public String sendRequest(String text) throws IOException, BadRequestException, UnauthorizedException {
         System.out.println("TESTING PURPOSE IN GPTAPISERVICE");
         System.out.println(text);

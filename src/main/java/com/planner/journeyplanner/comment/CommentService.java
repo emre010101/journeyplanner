@@ -81,6 +81,7 @@ public class CommentService {
     }
 
     public void deleteByJourney(Journey journey) {
+        System.out.println("Deleting the comment associated with: " + journey.getJourneyTitle());
         commentRepository.deleteByJourneyId(journey.getId());
     }
 }

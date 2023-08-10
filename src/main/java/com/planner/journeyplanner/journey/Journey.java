@@ -66,15 +66,15 @@ public class Journey {
     @JsonBackReference(value="user-journey")
     private User user;
 
-    @OneToMany(mappedBy = "journey")
+    @OneToMany(mappedBy = "journey", cascade = CascadeType.ALL)
     @JsonManagedReference(value="journey-comment")
     private List<Comment> comments;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_id", referencedColumnName = "id")
     private Location origin;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination_id", referencedColumnName = "id")
     private Location destination;
 

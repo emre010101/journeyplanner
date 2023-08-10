@@ -61,6 +61,7 @@ public class LikeService {
     }
 
     public void deleteByJourney(Journey journey) {
+        System.out.println("Deleting the Likes associated with: " + journey.getJourneyTitle());
          likeRepository.deleteByJourneyId(journey.getId());
     }
 }
