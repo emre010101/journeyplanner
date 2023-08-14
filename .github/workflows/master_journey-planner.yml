@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Maven
-        run: mvn -Dspring.datasource.username=${{ secrets.DATABASE_USERNAME }} -Dspring.datasource.password=${{ secrets.DATABASE_PASSWORD }} clean install
+        run: mvn -X "-Dspring.datasource.username=${{ secrets.DATABASE_USERNAME }}" "-Dspring.datasource.password=${{ secrets.DATABASE_PASSWORD }}" clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
