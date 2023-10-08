@@ -1,60 +1,31 @@
 // This is a placeholder for the logged-in user.
 //If the server confirm user authentication, the user will be saved here
-var loggedInUser = null; //'emre.kavak3938@gmail.com'
+var loggedInUser; // = "emre.kavak3938@gmail.com"; 
 
 //Adding window event listener to load external html components and other functionalities
 window.addEventListener("load", function() {
     console.log("Testing");
-    Promise.all([ //Waiting to load the other components
-        loadComponent('nav-bar', '../pages/navbar.html'),
-        loadComponent('logInModal', 'loginModal.html'),
-        loadComponent('signInModal', 'signinModal.html')
-    ])
-    .then(() => {
+    var elements = assignButtonAndModals();
+    assignEventListeners(elements);
 
-        var elements = assignButtonAndModals();
-        assignEventListeners(elements);
+    var token = localStorage.getItem('accessToken');
+    loggedInUser = localStorage.getItem('loggedInUser');
+    
 
-        var token = localStorage.getItem('accessToken');
-        loggedInUser = localStorage.getItem('loggedInUser');
-
-        if(token && loggedInUser){
-            console.log("User is found in the local storage!!");
-            // Set the page state depending on the logged in user
-            setPageState(loggedInUser, elements);
-        }else{
-            console.log("User is not found in the local storage!");
-        }
-
-
-    })
-    .catch((error) => {
-        console.error("Error: ", error);
-    });
+    if(token && loggedInUser){
+        console.log("User is found in the local storage!!");
+        // Set the page state depending on the logged in user
+        setPageState(loggedInUser, elements);
+    }else{
+        setPageState(loggedInUser, elements);
+        console.log("User is not found in the local storage!");
+    }
 });
 
-//Loading the other html elements dynamically
-function loadComponent(elementId, componentPath) {
-    return new Promise((resolve, reject) => {
-        const xhttp = new XMLHttpRequest();
-
-        xhttp.onload = function() {
-            const container = document.getElementById(elementId);
-            container.innerHTML = this.responseText;
-            // Using setTimeout to wait until the new HTML is inserted into the DOM
-            setTimeout(() => resolve(), 0);
-        }
-
-        xhttp.onerror = reject;
-
-        xhttp.open("GET", componentPath, true);
-        xhttp.send();
-    });
-}
 
 
 function assignButtonAndModals() {
-    //Declare your variables here
+    //Declare  variables
     var logInModal, signInModal, logInButton, signInButton, closeButtons, userRole, gptUsage, mapUsage;
 
     //Get the modals
@@ -154,6 +125,7 @@ function handleLoginFormSubmission(elements) {
 
 
 function loginUser(loginEmail, password, elements) {
+    console.log("Log in request is sent");
     // Create request payload
     var payload = {
         email: loginEmail,
@@ -161,7 +133,7 @@ function loginUser(loginEmail, password, elements) {
     };
 
     // Send POST request to /login
-    return fetch('https://journey-planner.azurewebsites.net/api/jp/auth/authenticate', {
+    return fetch('http://localhost:8082/api/jp/auth/authenticate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -183,11 +155,12 @@ function loginUser(loginEmail, password, elements) {
         // set the loggedInUser variable and update the UI.
         loggedInUser = loginEmail;
         elements.logInModal.style.display = "none";
-        setPageState(loggedInUser, elements);
 
         //Store JWT token in localStorege
         localStorage.setItem('accessToken', data.access_token);
-        localStorage.setItem('loggedInUser', loggedInUser);
+        localStorage.setItem('loggedInUser', loggedInUser);        
+        setPageState(loggedInUser, elements);
+
         // if the current page is communityRoom.html, reload it
         if (window.location.pathname.endsWith('communityRoom.html')) {
             location.reload();
@@ -229,6 +202,7 @@ function handleSignInFormSubmission(elements){
 
 
 function signinUser(signinEmail, password, signinFirstName, signinLastName, elements) {
+    console.log("Signing in the user");
     // Create request payload
     var payload = {
         email: signinEmail,
@@ -238,7 +212,7 @@ function signinUser(signinEmail, password, signinFirstName, signinLastName, elem
     };
 
     // Send POST request to /login
-    return fetch('https://journey-planner.azurewebsites.net/api/jp/auth/register', {
+    return fetch('http://localhost:8082/api/jp/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -318,8 +292,9 @@ function setPageState(loggedInUser, elements) {
 
 
 function logOutUser(elements){
+    console.log("Loggin out");
 
-    fetch('https://journey-planner.azurewebsites.net/api/jp/auth/logout', {
+    fetch('http://localhost:8082/api/jp/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -350,7 +325,8 @@ function logOutUser(elements){
 //Get the api usage
 // Get the api usage
 function getTodayApiUsage() {
-  const url = 'https://journey-planner.azurewebsites.net/api/jp/usage/today';
+    console.log("Fething Api usage");
+  const url = 'http://localhost:8082/api/jp/usage/today';
   const token = localStorage.getItem('accessToken');
 
   return fetch(url, {

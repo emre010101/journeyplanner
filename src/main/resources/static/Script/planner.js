@@ -24,7 +24,7 @@ async function handleButtonClick() {
 
 async function fetchData(userInput) {
     try {
-        const response = await fetch('https://journey-planner.azurewebsites.net/api/jp/gpt/analyze', {
+        const response = await fetch('http://localhost:8082/api/jp/gpt/analyze', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -201,7 +201,7 @@ function displayJourneyDetails(journeyDetails) {
 
 function createUrlForGoogleMap(journeyDetails) {
     console.log("Creating the Url for Google Map!");
-    // Construct the URL for Google Maps
+    // construct the URL for Google Maps
     let googleMapsUrl = "https://www.google.com/maps/dir/";
     journeyDetails.legs.forEach((leg, index) => {
         // Use the latitude and longitude from startLocationCoordinates
@@ -528,7 +528,7 @@ async function sentJourneyToServer() {
     };
 
     try {
-        const response = await fetch('https://journey-planner.azurewebsites.net/api/jp/journey/create', {
+        const response = await fetch('http://localhost:8082/api/jp/journey/create', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -567,7 +567,7 @@ function createStaticMapUrl(journeyDetails) {
     // Define map size, in this case, 600x600
     let size = 'size=600x450';
 
-    // Construct the full URL
+    // construct the full URL
     let staticMapUrl = `${baseUrl}${size}&${path}&key=${apiKey}`;
 
     console.log("Created the url to display: " + staticMapUrl)
@@ -589,7 +589,7 @@ function createStaticMapUrl(journeyDetails) {
 
 
 function incrementMapCounter() {
-  const url = 'https://journey-planner.azurewebsites.net/api/jp/usage/increment/map';
+  const url = 'http://localhost:8082/api/jp/usage/increment/map';
   const token = localStorage.getItem('accessToken');
 
   return fetch(url, {

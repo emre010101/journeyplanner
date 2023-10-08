@@ -1,6 +1,5 @@
 package com.planner.journeyplanner.Gpt;
 
-import com.planner.journeyplanner.apisLimit.ApiUsage;
 import com.planner.journeyplanner.apisLimit.ApiUsageService;
 import com.planner.journeyplanner.apisLimit.Type;
 import com.planner.journeyplanner.auth.AuthenticationService;

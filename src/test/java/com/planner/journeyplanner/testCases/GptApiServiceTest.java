@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import com.planner.journeyplanner.Gpt.GptApiService;
-import com.planner.journeyplanner.Gpt.HttpService;
-import com.planner.journeyplanner.config.AppConfig;
 import com.planner.journeyplanner.exception.BadRequestException;
 import com.planner.journeyplanner.exception.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;

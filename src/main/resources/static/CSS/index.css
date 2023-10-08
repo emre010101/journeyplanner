@@ -78,13 +78,13 @@ body {
 
 #car-animation2 {
     top: 120%;
-    animation-name: car-animation-top-bottom; // Changed to car-animation-top-bottom
+    animation-name: car-animation-top-bottom; /*// Changed to car-animation-top-bottom*/
     animation-delay: 3s;
 }
 
 #car-animation3 {
     top: -40%;
-    animation-name: car-animation-bottom-top; // Changed to car-animation-bottom-top
+    animation-name: car-animation-bottom-top; /*// Changed to car-animation-bottom-top*/
     animation-delay: 1.5s;
 }
 

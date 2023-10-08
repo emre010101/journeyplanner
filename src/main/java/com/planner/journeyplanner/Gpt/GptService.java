@@ -42,7 +42,7 @@ public class GptService {
                 return gptResponseHandler.parseResponse(gptResponse);
             } catch (IOException e) {
                 System.out.println("SOMETHING BAD HAPPENED WITH API CALL");
-                if (e instanceof java.net.HttpRetryException && ((HttpRetryException) e).responseCode() == 429) {
+                if (e instanceof HttpRetryException && ((HttpRetryException) e).responseCode() == 429) {
                     System.out.println("429 HIT HIT HIT HIT");
                     handleRateLimitExceeded(waitTime, attempts++);
                 } else {

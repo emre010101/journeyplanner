@@ -9,22 +9,41 @@
 </head>
 <body>
 <nav id="nav-bar">
+    <div id="site-name">
+        <a href="index.html">Journey Planner</a>
+        <a id="role"></a>
+        <a id="gpt-usage"></a>
+        <a id="map-usage"></a>
+    </div>
+    <div id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="planner.html" id="plannerLink" style="display: none">Planner</a>
+        <a href="communityRoom.html" id="communityLink" style="display: none">Community Room</a>
+        <span id="user-greeting"></span>
+        <button id="sign-in">Sign In</button>
+        <button id="log-in">Log In</button>
+        <button id="log-out">Log out</button>
+    </div>
+    
 </nav>
+
 <div class="container">
+  <!--
     <div class="animation-container">
         <div id="car-animation1">
-            <img src="../Images/jeepLeft.png" alt="Car 1">
+            <img src="Images/jeepLeft.png" alt="Car 1">
         </div>
         <div id="car-animation2">
-            <img src="../Images/greenCar.png" alt="Car 2">
+            <img src="Images/greenCar.png" alt="Car 2">
         </div>
         <div id="car-animation3">
-            <img src="../Images/yellowLeft.png" alt="Car 3">
+            <img src="Images/yellowLeft.png" alt="Car 3">
         </div>
         <div id="car-animation4">
-            <img src="../Images/redCartoon.png" alt="Car 4">
+            <img src="Images/redCartoon.png" alt="Car 4">
         </div>
     </div>
+  -->
     <div id="intro" class="centered-content">
         <h1>Welcome to Journey Planner</h1>
         <p>Welcome to your one-stop solution for all your travel planning needs. Before you get started, here are some simple steps on how to use the platform:</p>
@@ -39,8 +58,8 @@
             <li>We hope you have a great experience using our platform. Happy planning!</li>
         </ol>
         <p>For a more in-depth guide, watch the video tutorial below:</p>
-        <video id="tutorial-video" width="560" height="315" controls>
-            <source src="../video/tutorial.mp4" type="video/mp4">
+        <video id="tutorial-video" width="800" height="600" controls>
+            <source src="../Video/tutorial.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
@@ -48,10 +67,58 @@
 
 <!-- Log In Modal -->
 <div id="logInModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Please Login</h1>
+        <form id="loginForm">
+          <div class="form-control">
+            <input type="text" id="loginEmail" name="useremail" required>
+            <label for="loginEmail">Email</label>
+          </div>
+      
+          <div class="form-control">
+            <input type="password" id="loginPassword" name="password" required>
+            <label for="loginPassword">Password</label>
+          </div>
+      
+          <button class="enterbtn">Login</button>
+      
+          <p class="text">Don't have an account?
+            <a href="#" id="registerLink">Register</a>
+          </p>
+        </form>
+      </div>
 </div>
 
 <!-- Sign In Modal -->
 <div id="signInModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Please Sign-in</h1>
+        <form id="signinForm">
+          <div class="form-control">
+            <input type="text" id="signinEmail" required>
+            <label for="signinEmail">Email</label>
+          </div>
+          <div class="form-control">
+            <input type="password" id="signinPassword" name="password" required>
+            <label>Password</label>
+          </div>
+          <div class="form-control">
+            <input type="password" id="signinConfirmPassword" name="confirmPassword" required>
+            <label for="signinConfirmPassword">Confirm Password</label>
+          </div>
+          <div class="form-control">
+            <input type="text" id="signinFirstName" name="firstname" required>
+            <label for="signinFirstName">First Name</label>
+          </div>
+          <div class="form-control">
+            <input type="text" id="signinLastName" name="lastname" required>
+            <label for="signinLastName">Last Name</label>
+          </div>
+          <button class="enterbtn">Sing in</button>
+        </form>
+      </div>
 </div>
 
 <script src="../Script/navbar.js"></script>

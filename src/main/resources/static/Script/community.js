@@ -1,4 +1,4 @@
-// Store parameters in an object to manage state
+//http://localhost:8082// Store parameters in an object to manage state
 let searchParams = {
     sortBy: 'dateCreated',
     direction: 'desc',
@@ -15,7 +15,7 @@ let serverResponse;
 // Define a function to fetch journeys with current search parameters
 async function fetchJourneys() {
     // Construct URL with current search parameters
-    const url = new URL('https://journey-planner.azurewebsites.net/api/jp/journey/getJourneys');
+    const url = new URL('http://localhost:8082/api/jp/journey/getJourneys');
     // Print search params
     console.log("Printing the search params: ");
     console.log(searchParams);
@@ -470,7 +470,7 @@ document.getElementById('comment-form').addEventListener('submit', function(even
 // Function to create a new comment
 function createNewComment(content, journeyId) {
     // Call an API endpoint to create a new comment here.
-    fetch('https://journey-planner.azurewebsites.net/api/jp/comment/create', {
+    fetch('http://localhost:8082/api/jp/comment/create', {
         method: 'POST',
         headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -493,7 +493,7 @@ function createNewComment(content, journeyId) {
 // Function to update a comment
 function updateComment(content, journeyId, commentId) {
     // You need to call an API endpoint to update a comment here.
-    fetch('https://journey-planner.azurewebsites.net/api/jp/comment/update/' + commentId, {
+    fetch('http://localhost:8082/api/jp/comment/update/' + commentId, {
         method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -526,7 +526,7 @@ function updateComment(content, journeyId, commentId) {
 // Function to delete a comment
 function deleteComment(commentId) {
     // Call an API endpoint to delete a comment here.
-    fetch('https://journey-planner.azurewebsites.net/api/jp/comment/delete/' + commentId, {
+    fetch('http://localhost:8082/api/jp/comment/delete/' + commentId, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -544,7 +544,7 @@ function deleteComment(commentId) {
 function deleteJourney(journeyId){
     console.log("This id:" + journeyId);
     //Call the API endpoint to delete the journey
-    fetch('https://journey-planner.azurewebsites.net/api/jp/journey/delete/' + journeyId, {
+    fetch('http://localhost:8082/api/jp/journey/delete/' + journeyId, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -563,7 +563,7 @@ function deleteJourney(journeyId){
 }
 
 function sendLike(journeyId) {
-    fetch('https://journey-planner.azurewebsites.net/api/jp/like/' + journeyId, {
+    fetch('http://localhost:8082/api/jp/like/' + journeyId, {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
@@ -580,7 +580,7 @@ function sendLike(journeyId) {
 }
 
 function undoLike(journeyId) {
-    fetch('https://journey-planner.azurewebsites.net/api/jp/like/' + journeyId, {
+    fetch('http://localhost:8082/api/jp/like/' + journeyId, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
