@@ -1,7 +1,7 @@
 # journeyplanner
 This project is a journey planner application that integrates Google Map API and GPT API. Users can create, view, and share their journeys, comment on other user's journeys, and like them.
 
-![image](https://github.com/emre010101/journeyplanner/assets/118063573/4ca92b18-1259-40e0-9f52-01e9832ff4c0)
+![ezgif com-video-to-gif](https://github.com/emre010101/journeyplanner/assets/118063573/52a1f556-549e-4aa0-91c6-af0c6dd0ff11)
 
 Getting Started
 Follow these instructions to get a copy of the project up and running on your local machine.
